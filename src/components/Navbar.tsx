@@ -1,0 +1,195 @@
+
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { LogIn, LogOut, Loader2, Menu, MapPin, Sparkles, ChevronsUpDown, Check } from 'lucide-react';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import type { User, Address, Agent } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter, usePathname } from 'next/navigation';
+import { AppRoutes } from '@/lib/urls';
+import { cn } from '@/lib/utils';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Skeleton } from './ui/skeleton';
+import { Separator } from './ui/separator';
+
+
+interface NavbarProps {
+  user: User | null;
+  activeAddress: Address | null;
+  isAuthLoading: boolean;
+  onToggleSidebar: () => void;
+  isSidebarVisible: boolean;
+  onToggleChatbar: () => void;
+  agents: Agent[];
+  activeAgent: Agent | null;
+  setActiveAgent: (agent: Agent) => void;
+  isLoadingAgents: boolean;
+}
+
+export default function Navbar({ 
+  user, 
+  activeAddress, 
+  isAuthLoading, 
+  onToggleSidebar, 
+  isSidebarVisible,
+  onToggleChatbar,
+  agents,
+  activeAgent,
+  setActiveAgent,
+  isLoadingAgents
+}: NavbarProps) {
+  const { toast } = useToast();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isAgentSelectorOpen, setIsAgentSelectorOpen] = React.useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: 'Sesión Cerrada',
+        description: 'Has cerrado sesión exitosamente.',
+      });
+      router.push('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast({
+        title: 'Error',
+        description: 'No se pudo cerrar la sesión. Inténtalo de nuevo.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleAgentSelect = (agent: Agent) => {
+    setActiveAgent(agent);
+    setIsAgentSelectorOpen(false);
+  };
+
+  const isAuthPage = pathname === '/login' || pathname === '/register';
+  const showUserControls = !isAuthLoading && user && !isAuthPage;
+
+  return (
+    <header className="fixed top-0 left-0 right-0 h-[var(--header-height)] bg-card/95 backdrop-blur-sm shadow-md z-40 border-b">
+      <div className="container mx-auto px-4 h-full flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          {showUserControls && isSidebarVisible && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onToggleSidebar}
+              aria-label="Toggle Sidebar"
+            >
+              <Menu />
+            </Button>
+          )}
+          <Link href={user ? "/inicio" : "/"} className="text-xl font-headline text-primary hover:opacity-80 transition-opacity">
+            UNI2
+          </Link>
+        </div>
+        
+        <nav className="flex items-center space-x-2">
+          {isAuthLoading ? (
+             <div className="flex items-center justify-center h-9 w-20">
+               <Loader2 size={20} className="animate-spin text-primary" />
+             </div>
+           ) : showUserControls ? (
+              <>
+                {/* --- CONTEXT GROUP --- */}
+                {activeAddress && (
+                   <Button variant="outline" className="hidden sm:flex h-9 text-muted-foreground font-normal">
+                    <MapPin size={16} className="mr-2 text-primary" />
+                    <span className="truncate">{activeAddress.name}</span>
+                   </Button>
+                )}
+                
+                {isLoadingAgents ? (
+                    <Skeleton className="h-9 w-48 rounded-md" />
+                ) : activeAgent && (
+                     <Popover open={isAgentSelectorOpen} onOpenChange={setIsAgentSelectorOpen}>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" role="combobox" aria-expanded={isAgentSelectorOpen} className="justify-between w-48 h-9 font-normal">
+                                <div className="flex items-center gap-2 truncate">
+                                    <Avatar className="h-6 w-6">
+                                        <AvatarImage src={activeAgent.icono_principal} />
+                                        <AvatarFallback />
+                                    </Avatar>
+                                    <span className="truncate text-sm">{activeAgent.nombre}</span>
+                                </div>
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-48 p-0 z-50">
+                             <Command>
+                                <CommandList>
+                                    <CommandGroup>
+                                        {agents.map((agent) => (
+                                        <CommandItem
+                                            key={agent.id}
+                                            onSelect={() => handleAgentSelect(agent)}
+                                            className="flex items-center gap-2 cursor-pointer text-sm"
+                                        >
+                                            <Avatar className="h-6 w-6">
+                                                <AvatarImage src={agent.icono_principal} />
+                                                <AvatarFallback />
+                                            </Avatar>
+                                            <span className="flex-grow truncate">{agent.nombre}</span>
+                                            <Check
+                                              className={cn(
+                                                  "mr-2 h-4 w-4",
+                                                  activeAgent?.id === agent.id ? "opacity-100" : "opacity-0"
+                                              )}
+                                            />
+                                        </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
+                )}
+
+                {/* --- ACTIONS GROUP --- */}
+                <Separator orientation="vertical" className="h-6 mx-2" />
+
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={onToggleChatbar} 
+                    title="Asistente IA" 
+                    className="relative text-primary hover:text-primary hover:bg-primary/10 rounded-full"
+                  >
+                    <Sparkles size={22} className="transition-transform group-hover:scale-110" />
+                    <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/80 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                    </span>
+                    <span className="sr-only">Abrir Chat de Asistente IA</span>
+                </Button>
+                <Button variant="ghost" size="icon" onClick={handleLogout} title="Cerrar Sesión">
+                  <LogOut size={20} />
+                   <span className="sr-only">Salir</span>
+                </Button>
+              </>
+          ) : (
+            !isAuthPage && (
+              <Button asChild>
+                <Link href="/login">
+                  <LogIn size={18} />
+                  <span>Login</span>
+                </Link>
+              </Button>
+            )
+          )}
+        </nav>
+      </div>
+    </header>
+  );
+}
+

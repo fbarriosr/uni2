@@ -1,0 +1,197 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Aquí podrías añadir tus estilos globales adicionales y variables CSS */
+:root {
+  --header-height: 4rem; /* Define a consistent header height */
+
+  /* Default (light) theme variables */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.4% 91.4%;
+  --input: 214.3 31.4% 91.4%;
+  --ring: 222.2 84% 4.9%;
+  --radius: 0.5rem;
+
+  /* Sidebar Colors (consider making these theme-dependent as well if needed) */
+  --sidebar-background: 240 5% 96%;
+  --sidebar-foreground: 240 4% 16%;
+  --sidebar-border: 240 5% 89%;
+  --sidebar-primary: 222.2 47.4% 11.2%;
+  --sidebar-primary-foreground: 210 40% 98%;
+  --sidebar-accent: 210 40% 96.1%;
+  --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+  --sidebar-ring: 222.2 84% 4.9%;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.4% 14.8%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.4% 14.8%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.4% 14.8%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.4% 14.8%;
+  --input: 217.2 32.4% 14.8%;
+  --ring: 212.7 26.8% 83.9%;
+}
+
+/* --- Missing Theme Definitions --- */
+
+.forest {
+  --background: 43 67% 96%;
+  --primary: 115 31% 32%;
+  --accent: 45 100% 51%;
+  /* Add other variables like --foreground, --card, etc. based on your design for this theme */
+  --foreground: 240 4% 16%; /* Example: using a dark text color */
+  --card: 0 0% 100%; /* Example: white cards */
+  --card-foreground: 240 4% 16%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 4% 16%;
+  --secondary: 43 67% 90%; /* Example secondary color */
+  --secondary-foreground: 240 4% 16%;
+  --muted: 43 67% 90%;
+  --muted-foreground: 240 4% 30%; /* Slightly lighter muted text */
+  --destructive: 0 84.2% 60.2%; /* Using default destructive for now */
+  --destructive-foreground: 210 40% 98%;
+  --border: 43 67% 85%; /* Example border color */
+  --input: 43 67% 90%; /* Example input background */
+  --ring: 115 31% 32%; /* Example ring color based on primary */
+}
+
+.space {
+  --background: 216 36% 8%;
+  --primary: 203 92% 60%;
+  --accent: 292 90% 73%;
+  /* Add other variables for this theme */
+  --foreground: 210 40% 98%; /* Example: light text */
+  --card: 216 36% 15%; /* Example dark card */
+  --card-foreground: 210 40% 98%;
+  --popover: 216 36% 15%;
+  --popover-foreground: 210 40% 98%;
+  --secondary: 203 92% 40%; /* Example secondary color */
+  --secondary-foreground: 210 40% 98%;
+  --muted: 216 30% 20%; /* Example muted background */
+  --muted-foreground: 215 20.2% 75.1%; /* Lighter muted text */
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 216 36% 25%;
+  --input: 216 36% 20%;
+  --ring: 203 92% 60%;
+}
+
+.beach {
+  --background: 48 100% 95%;
+  --primary: 178 51% 46%;
+  --accent: 25 95% 53%;
+  /* Add other variables for this theme */
+  --foreground: 222.2 84% 4.9%; /* Example: dark text */
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --secondary: 48 100% 90%;
+  --secondary-foreground: 222.2 84% 4.9%;
+  --muted: 48 100% 90%;
+  --muted-foreground: 215.4 16.3% 56.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 48 100% 85%;
+  --input: 48 100% 90%;
+  --ring: 178 51% 46%;
+}
+
+.superhero {
+  --background: 220 13% 91%;
+  --primary: 0 72% 51%;
+  --accent: 45 96% 56%;
+  /* Add other variables for this theme */
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --secondary: 220 13% 80%;
+  --secondary-foreground: 222.2 84% 4.9%;
+  --muted: 220 13% 80%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 220 13% 75%;
+  --input: 220 13% 80%;
+  --ring: 0 72% 51%;
+}
+
+.bedtime {
+  --background: 229 23% 22%;
+  --primary: 254 91% 76%;
+  --accent: 156 72% 67%;
+  /* Add other variables for this theme */
+  --foreground: 210 40% 98%;
+  --card: 229 23% 30%;
+  --card-foreground: 210 40% 98%;
+  --popover: 229 23% 30%;
+  --popover-foreground: 210 40% 98%;
+  --secondary: 254 91% 60%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 229 23% 35%;
+  --muted-foreground: 215 20.2% 70.1%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 229 23% 40%;
+  --input: 229 23% 35%;
+  --ring: 254 91% 76%;
+}
+
+/* --- Missing Font Pair Definitions --- */
+/* Add CSS for font pairs if they are handled via classes */
+/* Example (adjust font-family names as needed): */
+.font-pair-nunito-inter {
+  --font-heading: 'Nunito Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+.font-pair-poppins-lato {
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Lato', sans-serif;
+}
+
+.font-pair-playfair-montserrat {
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Montserrat', sans-serif;
+}
+
+/* Apply these font variables in your components or global styles */
+/* Example: */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+body {
+  font-family: var(--font-body);
+}

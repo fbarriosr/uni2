@@ -1,0 +1,43 @@
+// src/lib/urls.ts
+
+export const AppRoutes = {
+  home: '/',
+  inicio: '/inicio', 
+  actividades: '/actividades', 
+  actividadesDetalle: (id: string, salidaId?: string) =>
+    salidaId ? `/actividades/${id}?salidaId=${salidaId}` : `/actividades/${id}`,
+  nueva_salida: '/nueva_salida',
+  login: '/login',
+  register: '/register',
+  configuraciones: '/configuraciones',
+  configuracionesAddresses: '/configuraciones#addresses',
+  familia: '/familia',
+  reclamos: '/reclamos',
+  vinculo: '/vinculo',
+  vinculoExpertDetail: (id: string) => `/academia/expertos/${id}`, 
+  asesoriaLegal: '/asesoria_legal',
+  asesoriaLegalExpertDetail: (id: string) => `/asesoria_legal/expertos/${id}`,
+  salidas: {
+    detail: (id: string) => `/salidas/${id}`,
+    match: (id: string) => `/salidas/${id}/match`,
+    itinerario: (id: string) => `/salidas/${id}/itinerario`,
+    recuerdos: (id: string) => `/salidas/${id}/recuerdos`,
+    evaluacion: (id: string) => `/salidas/${id}/evaluacion`,
+  },
+  admin: {
+    dashboard: '/admin',
+    activities: '/admin/activities',
+    newActivity: '/admin/activities/new',
+    editActivity: (id: string) => `/admin/activities/edit/${id}`,
+    claims: '/admin/claims', 
+    learningPaths: '/admin/academia/rutas',
+    microLessons: '/admin/academia/lecciones',
+    challenges: '/admin/academia/desafios',
+    articles: '/admin/academia/articulos',
+    experts: '/admin/academia/expertos',
+    legalExperts: '/admin/legal/expertos',
+    suggestedReadings: '/admin/academia/lecturas',
+    cupones: '/admin/cupones',
+    configuracionesAgentes: '/admin/configuraciones/agentes',
+  }
+};
