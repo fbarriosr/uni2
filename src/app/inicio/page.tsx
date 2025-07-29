@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -44,6 +43,19 @@ interface OutingDisplayItem {
   participantAvatarUrls?: string[];
 }
 
+// Agregar interfaz BirthdayInfo para cumpleaños
+interface BirthdayInfo {
+  date: Date;
+  name: string;
+}
+
+// Agregar interfaz ImageHighlight para eventos destacados
+interface ImageHighlight {
+  date: string; // Formato: "dd MMM yyyy"
+  imageUrl: string;
+  aiHint: string;
+}
+
 const UpcomingOutingsSection = dynamic(() => import('@/components/inicio/UpcomingOutingsSection'), { ssr: false });
 const DualMonthCalendar = dynamic(() => import('@/components/DualMonthCalendar'), { ssr: false });
 
@@ -53,19 +65,21 @@ export default function InicioPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
+  const [clientReady, setClientReady] = useState(false);
+  const [today, setToday] = useState<Date | undefined>();
   const [allOutings, setAllOutings] = useState<OutingDisplayItem[]>([]);
   const [upcomingOutings, setUpcomingOutings] = useState<OutingDisplayItem[]>([]);
   const [pastOutings, setPastOutings] = useState<OutingDisplayItem[]>([]);
-  const [imageHighlights, setImageHighlights] = useState<any[]>([]);
-  const [birthdays, setBirthdays] = useState<any[]>([]);
+  const [imageHighlightData, setImageHighlightData] = useState<ImageHighlight[]>([]);
+  const [birthdays, setBirthdays] = useState<BirthdayInfo[]>([]);
+  const [upcomingOutingDates, setUpcomingOutingDates] = useState<Date[]>([]);
 
   const [currentDisplayMonth, setCurrentDisplayMonth] = useState(new Date());
 
-  const processOutings = useCallback((allPlans: SalidaPlan[], clientNow: Date): [OutingDisplayItem[], OutingDisplayItem[], any[], any[]] => {
+  const processOutings = useCallback((allPlans: SalidaPlan[], clientNow: Date): [OutingDisplayItem[], OutingDisplayItem[], ImageHighlight[]] => {
     const upcoming: OutingDisplayItem[] = [];
     const past: OutingDisplayItem[] = [];
-    const highlights: any[] = [];
-    const birthdayList: any[] = [];
+    const highlights: ImageHighlight[] = [];
 
     allPlans.forEach(plan => {
       const isPast = plan.dateRange.from < clientNow;
@@ -90,20 +104,17 @@ export default function InicioPage() {
         upcoming.push(displayItem);
       }
       
-      // Add to highlights for calendar
-      if (plan.dateRange.from) {
+      // Solo agregar eventos futuros para el calendario
+      if (!isPast && plan.dateRange.from && plan.activity?.mainImage) {
         highlights.push({
-            date: plan.dateRange.from,
-            imageUrl: imageUrl,
-            aiHint: imageHint,
-            isSpecialHighlight: plan.isSpecialHighlight,
-            isPast,
+          date: format(plan.dateRange.from, "dd MMM yyyy", { locale: es }),
+          imageUrl: imageUrl,
+          aiHint: imageHint,
         });
       }
-
     });
 
-    return [upcoming, past, highlights, birthdayList];
+    return [upcoming, past, highlights];
   }, []);
 
   const fetchPageData = useCallback(async (uid: string) => {
@@ -147,7 +158,6 @@ export default function InicioPage() {
         const data = docSnap.data();
         
         let fetchedActivity: Activity | null = null;
-        // Fetch the first activity request for the outing to get activity details
         const activitiesRequestRef = collection(db, 'users', familyHeadUid, 'salidas', docSnap.id, 'actividades');
         const requestQuery = query(activitiesRequestRef, orderBy('requestedAt', 'desc'));
         const requestSnapshot = await getDocs(requestQuery);
@@ -174,12 +184,16 @@ export default function InicioPage() {
 
       let allPlans = await Promise.all(allPlansPromises);
 
-      // Identify and mark the most immediate upcoming outing
+      // Filtrar SOLO eventos futuros para upcomingOutingDates
+      const upcomingDatesOnly: Date[] = allPlans
+        .filter(plan => plan.dateRange.from && plan.dateRange.from >= clientNow)
+        .map(plan => plan.dateRange.from);
+      setUpcomingOutingDates(upcomingDatesOnly);
+
       const now = new Date();
       let nextOutingIndex = -1;
       let minDiff = Infinity;
       allPlans.forEach((plan, index) => {
-          // Check if the outing is in the future and has a start date
           if (plan.dateRange.from && plan.dateRange.from >= now) {
               const diff = plan.dateRange.from.getTime() - now.getTime();
               if (diff < minDiff) {
@@ -192,24 +206,27 @@ export default function InicioPage() {
           allPlans[nextOutingIndex].isSpecialHighlight = true;
       }
 
-      const [upcoming, past, highlights, birthdayList] = processOutings(allPlans, clientNow);
+      const [upcoming, past, highlights] = processOutings(allPlans, clientNow);
       
       const currentYear = new Date().getFullYear();
+      const birthdayList: BirthdayInfo[] = [];
       familyMembersMap.forEach(member => {
         if (member.birthday && member.name) {
           const birthDate = new Date(member.birthday);
           const month = birthDate.getMonth();
           const day = birthDate.getDate();
-          // Add birthday for current and next year to ensure it appears in the calendar
-          birthdayList.push({ date: new Date(currentYear, month, day), name: member.name });
-          birthdayList.push({ date: new Date(currentYear + 1, month, day), name: member.name });
+          // Solo agregar cumpleaños futuros
+          const nextBirthday = new Date(currentYear, month, day);
+          if (nextBirthday >= clientNow) {
+            birthdayList.push({ date: nextBirthday, name: member.name });
+          }
         }
       });
 
       setAllOutings([...upcoming, ...past]);
       setUpcomingOutings(upcoming);
       setPastOutings(past);
-      setImageHighlights(highlights);
+      setImageHighlightData(highlights);
       setBirthdays(birthdayList);
 
     } catch (err) {
@@ -221,6 +238,10 @@ export default function InicioPage() {
   }, [processOutings]);
 
   useEffect(() => {
+    setClientReady(true);
+    const clientToday = new Date();
+    clientToday.setHours(0, 0, 0, 0);
+    setToday(clientToday);
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
@@ -241,7 +262,6 @@ export default function InicioPage() {
       {loading ? (
         <div className="px-4"><Skeleton className="h-48 w-full rounded-2xl" /></div>
       ) : (
-        // 1. Imagen proxima salida
         <InicioHeroSection outing={mostImmediateOuting} userRole={appUser?.role} />
       )}
 
@@ -255,18 +275,23 @@ export default function InicioPage() {
 
       {!loading && !error && (
         <div className="space-y-12">
-          {/* 2. Calendario de dos meses */}
           <div className="px-4">
-             <DualMonthCalendar
-                month={currentDisplayMonth}
-                handlePrevMonth={() => setCurrentDisplayMonth(subMonths(currentDisplayMonth, 1))}
-                handleNextMonth={() => setCurrentDisplayMonth(addMonths(currentDisplayMonth, 1))}
-                imageHighlightData={imageHighlights}
-                birthdayInfo={birthdays}
-              />
+             {clientReady && today ? (
+               <DualMonthCalendar
+                 month={currentDisplayMonth}
+                 onMonthChange={setCurrentDisplayMonth}
+                 todayDate={today}
+                 birthdayInfo={birthdays}
+                 upcomingDates={upcomingOutingDates}
+                 imageHighlightData={imageHighlightData}
+               />
+             ) : (
+               <div className="bg-card p-4 rounded-xl shadow-lg border">
+                 <Skeleton className="h-[550px] w-full" />
+               </div>
+             )}
           </div>
 
-          {/* 3. Proximas salidas */}
           <UpcomingOutingsSection
             title="Próximas Aventuras"
             items={upcomingOutings}
@@ -274,7 +299,6 @@ export default function InicioPage() {
             emptyMessage="No tienes planes futuros. ¡Es hora de crear uno!"
           />
           
-          {/* 4. Banner "no solo planifiques conecta" */}
           <div
             className="relative w-full h-64 bg-cover bg-center rounded-xl overflow-hidden mt-12"
             style={{
@@ -290,7 +314,6 @@ export default function InicioPage() {
             </div>
           </div>
 
-          {/* 5. Recuerdos Memorables (salidas pasadas) */}
           <HorizontalCardCarousel
             title="Recuerdos Memorables de Salidas Pasadas"
             items={pastOutings}

@@ -79,7 +79,7 @@ export default function CalendarDisplay({
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <div className="absolute -top-1 -right-1 z-20">
-                           <Gift className="h-4 w-4 text-rose-500 bg-white rounded-full p-0.5" />
+                           <Gift className="h-6 w-6 text-rose-500 bg-white rounded-full p-0.5" />
                         </div>
                     </TooltipTrigger>
                     <TooltipContent>

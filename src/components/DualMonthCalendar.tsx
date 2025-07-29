@@ -86,7 +86,7 @@ export default function DualMonthCalendar({
     return (
         <>
             <LegendItem colorClass="bg-accent" label="Día actual" />
-            <LegendItem icon={Gift} label="Cumpleaños" className="text-rose-500" />
+            <LegendItem icon={Gift} label="Cumpleaños" className="text-rose-500 w-6 h-6" />
             <LegendItem colorClass="bg-primary/20" label="Día ocupado" />
             {mode === 'range' && <LegendItem colorClass="bg-primary" label="Seleccionado" />}
         </>

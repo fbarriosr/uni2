@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, ReactNode, useEffect } from 'react';
@@ -133,10 +134,6 @@ export default function AppLayoutClient({
               onToggleSidebar={handleToggleSidebar}
               isSidebarVisible={showSidebar}
               onToggleChatbar={handleToggleChatbar}
-              agents={agents}
-              activeAgent={activeAgent}
-              setActiveAgent={setActiveAgent}
-              isLoadingAgents={loadingAgents}
             />
             <main className={cn(
                 "flex-1 overflow-y-auto overflow-x-hidden",
@@ -157,11 +154,16 @@ export default function AppLayoutClient({
           
           {showChatbar && (
              <aside className={cn(
-                  "hidden lg:flex flex-col flex-shrink-0 bg-card/50 transition-all duration-300 ease-in-out border-l",
-                  isChatbarCollapsed ? "w-0 p-0 border-transparent" : "w-[380px]" 
-              )}>
-                <LemonDropChat agent={activeAgent} isLoading={loadingAgents} />
-             </aside>
+              "hidden lg:flex flex-col flex-shrink-0 bg-card/50 transition-all duration-300 ease-in-out border-l pt-[var(--header-height)]",
+              isChatbarCollapsed ? "w-0 p-0 border-transparent" : "w-[380px]"
+            )}>
+              <LemonDropChat 
+                activeAgent={activeAgent} 
+                agents={agents}
+                setActiveAgent={setActiveAgent}
+                isLoading={loadingAgents} 
+              />
+            </aside>
           )}
 
         </div>

@@ -4,20 +4,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { LogIn, LogOut, Loader2, Menu, MapPin, Sparkles, ChevronsUpDown, Check } from 'lucide-react';
+import { LogIn, LogOut, Loader2, Menu, MapPin, Sparkles } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import type { User, Address, Agent } from '@/lib/types';
+import type { User, Address } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter, usePathname } from 'next/navigation';
 import { AppRoutes } from '@/lib/urls';
 import { cn } from '@/lib/utils';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Skeleton } from './ui/skeleton';
 import { Separator } from './ui/separator';
-
 
 interface NavbarProps {
   user: User | null;
@@ -26,28 +21,19 @@ interface NavbarProps {
   onToggleSidebar: () => void;
   isSidebarVisible: boolean;
   onToggleChatbar: () => void;
-  agents: Agent[];
-  activeAgent: Agent | null;
-  setActiveAgent: (agent: Agent) => void;
-  isLoadingAgents: boolean;
 }
 
 export default function Navbar({ 
-  user, 
-  activeAddress, 
-  isAuthLoading, 
-  onToggleSidebar, 
+  user,
+  activeAddress,
+  isAuthLoading,
+  onToggleSidebar,
   isSidebarVisible,
   onToggleChatbar,
-  agents,
-  activeAgent,
-  setActiveAgent,
-  isLoadingAgents
 }: NavbarProps) {
   const { toast } = useToast();
   const router = useRouter();
   const pathname = usePathname();
-  const [isAgentSelectorOpen, setIsAgentSelectorOpen] = React.useState(false);
 
   const handleLogout = async () => {
     try {
@@ -65,11 +51,6 @@ export default function Navbar({
         variant: 'destructive',
       });
     }
-  };
-
-  const handleAgentSelect = (agent: Agent) => {
-    setActiveAgent(agent);
-    setIsAgentSelectorOpen(false);
   };
 
   const isAuthPage = pathname === '/login' || pathname === '/register';
@@ -107,52 +88,6 @@ export default function Navbar({
                     <MapPin size={16} className="mr-2 text-primary" />
                     <span className="truncate">{activeAddress.name}</span>
                    </Button>
-                )}
-                
-                {isLoadingAgents ? (
-                    <Skeleton className="h-9 w-48 rounded-md" />
-                ) : activeAgent && (
-                     <Popover open={isAgentSelectorOpen} onOpenChange={setIsAgentSelectorOpen}>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" role="combobox" aria-expanded={isAgentSelectorOpen} className="justify-between w-48 h-9 font-normal">
-                                <div className="flex items-center gap-2 truncate">
-                                    <Avatar className="h-6 w-6">
-                                        <AvatarImage src={activeAgent.icono_principal} />
-                                        <AvatarFallback />
-                                    </Avatar>
-                                    <span className="truncate text-sm">{activeAgent.nombre}</span>
-                                </div>
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-48 p-0 z-50">
-                             <Command>
-                                <CommandList>
-                                    <CommandGroup>
-                                        {agents.map((agent) => (
-                                        <CommandItem
-                                            key={agent.id}
-                                            onSelect={() => handleAgentSelect(agent)}
-                                            className="flex items-center gap-2 cursor-pointer text-sm"
-                                        >
-                                            <Avatar className="h-6 w-6">
-                                                <AvatarImage src={agent.icono_principal} />
-                                                <AvatarFallback />
-                                            </Avatar>
-                                            <span className="flex-grow truncate">{agent.nombre}</span>
-                                            <Check
-                                              className={cn(
-                                                  "mr-2 h-4 w-4",
-                                                  activeAgent?.id === agent.id ? "opacity-100" : "opacity-0"
-                                              )}
-                                            />
-                                        </CommandItem>
-                                        ))}
-                                    </CommandGroup>
-                                </CommandList>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
                 )}
 
                 {/* --- ACTIONS GROUP --- */}
@@ -192,4 +127,3 @@ export default function Navbar({
     </header>
   );
 }
-

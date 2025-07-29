@@ -1,12 +1,13 @@
-'use client';
 
+'use client';
+import React from 'react';
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Send, User as UserIcon, Bot, Loader2 } from 'lucide-react';
+import { Send, User as UserIcon, Bot, Loader2, ChevronsUpDown, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { chatActivity, type ChatActivityInput, type ChatActivityOutput } from '@/ai/flows/chat-activity-flow';
@@ -16,6 +17,8 @@ import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
 import { getUserById } from '@/lib/data';
 import Image from 'next/image';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
 
 
 interface Message {
@@ -31,7 +34,10 @@ interface Message {
 }
 
 interface AiSuggestionsChatProps {
-  agent: Agent;
+  activeAgent: Agent;
+  agents: Agent[];
+  setActiveAgent: (agent: Agent) => void;
+  isLoadingAgents: boolean;
 }
 
 // Custom animation for wave emoji
@@ -58,7 +64,12 @@ const AnimateWave = () => (
 );
 
 
-export default function AiSuggestionsChat({ agent }: AiSuggestionsChatProps) {
+export default function AiSuggestionsChat({
+  activeAgent,
+  agents,
+  setActiveAgent,
+  isLoadingAgents,
+}: AiSuggestionsChatProps) {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -68,11 +79,12 @@ export default function AiSuggestionsChat({ agent }: AiSuggestionsChatProps) {
   const { toast } = useToast();
   const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [isAgentSelectorOpen, setIsAgentSelectorOpen] = React.useState(false);
 
   // When agent changes, clear the chat history
   useEffect(() => {
     setMessages([]);
-  }, [agent]);
+  }, [activeAgent]);
 
 
   useEffect(() => {
@@ -95,14 +107,13 @@ export default function AiSuggestionsChat({ agent }: AiSuggestionsChatProps) {
 
   useEffect(() => {
     if (scrollAreaRef.current) {
-      // Use a timeout to ensure the new element is rendered before scrolling
       setTimeout(() => {
         if(scrollAreaRef.current) {
           scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
         }
       }, 100);
     }
-  }, [messages, isLoading]); // Add isLoading to dependency array
+  }, [messages, isLoading]);
 
   const handleSendMessage = async (eOrText: React.FormEvent<HTMLFormElement> | string) => {
     let textInput: string;
@@ -116,7 +127,6 @@ export default function AiSuggestionsChat({ agent }: AiSuggestionsChatProps) {
     const trimmedInput = textInput.trim();
     if (!trimmedInput) return;
 
-    // Reset input field only if it was a manual submission
     if (typeof eOrText !== 'string') {
         setInputValue('');
     }
@@ -136,17 +146,15 @@ export default function AiSuggestionsChat({ agent }: AiSuggestionsChatProps) {
       userFallbackName: userFallbackName.toUpperCase(),
     };
 
-    // Construct the history for the AI, including the new message.
     const historyForAi = messages.map(m => ({
         role: m.role,
-        content: m.content || '', // Use empty string for messages without text content
+        content: m.content || '',
     }));
     historyForAi.push({
         role: 'user',
         content: trimmedInput
     });
 
-    // Update the UI state with the new user message
     setMessages((prevMessages) => [...prevMessages, userMessageForUi]);
     setIsLoading(true);
 
@@ -154,8 +162,7 @@ export default function AiSuggestionsChat({ agent }: AiSuggestionsChatProps) {
       const input: ChatActivityInput = {
         history: historyForAi,
         userId: currentUser?.id,
-        // Pass the specific agent's prompt as the system prompt
-        systemPrompt: agent.prompt,
+        systemPrompt: activeAgent.prompt,
       };
       const result: ChatActivityOutput = await chatActivity(input);
 
@@ -165,18 +172,16 @@ export default function AiSuggestionsChat({ agent }: AiSuggestionsChatProps) {
         content: result.aiResponse,
         activities: result.foundActivities as Activity[] || [],
         timestamp: new Date(),
-        avatarUrl: agent.icono_principal, // Use active agent's icon
-        avatarHint: agent.rol,
+        avatarUrl: activeAgent.icono_principal,
+        avatarHint: activeAgent.rol,
         quickReplies: result.quickReplies || [],
       };
       setMessages((prevMessages) => [...prevMessages, aiMessage]);
-      
+
       if (result.navigationAction?.route) {
-        // The user sees the confirmation message in the chat bubble.
-        // A short delay before navigating provides better user experience.
         setTimeout(() => {
           router.push(result.navigationAction!.route);
-        }, 1000); // 1-second delay
+        }, 1000);
       }
 
     } catch (error) {
@@ -191,7 +196,7 @@ export default function AiSuggestionsChat({ agent }: AiSuggestionsChatProps) {
         role: 'assistant',
         content: "Lo siento, tuve un problema al procesar tu solicitud. ¿Podrías intentarlo de nuevo?",
         timestamp: new Date(),
-        avatarUrl: agent.icono_secundario,
+        avatarUrl: activeAgent.icono_secundario,
         avatarHint: "error icon",
       };
       setMessages((prevMessages) => [...prevMessages, errorResponseMessage]);
@@ -201,34 +206,26 @@ export default function AiSuggestionsChat({ agent }: AiSuggestionsChatProps) {
     }
   };
 
+  const handleAgentSelect = (selectedAgent: Agent) => {
+    setActiveAgent(selectedAgent);
+    setIsAgentSelectorOpen(false);
+  };
+
   return (
     <div className="flex flex-col h-full bg-background text-foreground">
-       {/* Chat Header */}
-      <div className="p-3 border-b border-border flex items-center gap-3 shrink-0 h-[var(--header-height)]">
-        <Avatar className="h-10 w-10">
-            <AvatarImage src={agent.icono_principal} alt={`${agent.nombre} Avatar`} data-ai-hint={agent.rol} />
-            <AvatarFallback className="bg-transparent"><Bot size={24} className="text-muted-foreground" /></AvatarFallback>
-        </Avatar>
-        <div>
-            <h2 className="text-base font-headline text-foreground leading-tight">
-                {agent.nombre}
-            </h2>
-            <p className="text-xs text-muted-foreground leading-tight">{agent.rol}</p>
-        </div>
-      </div>
       <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
         <div className="space-y-4">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center p-4">
                <Avatar className="h-24 w-24 mb-4">
-                <AvatarImage src={agent.icono_principal} alt={`${agent.nombre} Avatar`} data-ai-hint={agent.rol} />
+                <AvatarImage src={activeAgent.icono_principal} alt={`${activeAgent.nombre} Avatar`} data-ai-hint={activeAgent.rol} />
                 <AvatarFallback className="bg-transparent"><Bot size={40} className="text-muted-foreground" /></AvatarFallback>
               </Avatar>
               <h2 className="text-2xl font-bold text-foreground mb-1">
-                ¡Hola! Soy {agent.nombre}. <AnimateWave />
+                ¡Hola! Soy {activeAgent.nombre}. <AnimateWave />
               </h2>
               <p className="text-sm text-muted-foreground mt-1 max-w-md">
-                {agent.rol}. ¿En qué puedo ayudarte hoy?
+                {activeAgent.rol}. ¿En qué puedo ayudarte hoy?
               </p>
             </div>
           )}
@@ -292,7 +289,7 @@ export default function AiSuggestionsChat({ agent }: AiSuggestionsChatProps) {
                         ))}
                       </div>
                     )}
-                    
+
                     {message.quickReplies && message.quickReplies.length > 0 && (
                         <div className="mt-2 flex flex-wrap gap-2 justify-end max-w-[85%]">
                             {message.quickReplies.map((reply, index) => (
@@ -326,7 +323,7 @@ export default function AiSuggestionsChat({ agent }: AiSuggestionsChatProps) {
                 <Loader2 className="h-5 w-5 animate-spin text-primary" />
               </div>
               <Avatar className="h-8 w-8 border-2 border-primary/50 shrink-0 mt-1">
-                <Image src={agent.icono_secundario} alt={`${agent.nombre} Pensando`} width={32} height={32} data-ai-hint={agent.rol} />
+                <Image src={activeAgent.icono_secundario} alt={`${activeAgent.nombre} Pensando`} width={32} height={32} data-ai-hint={activeAgent.rol} />
                 <AvatarFallback className="bg-primary/10"><Bot size={16} className="text-primary"/></AvatarFallback>
               </Avatar>
             </div>
@@ -340,7 +337,7 @@ export default function AiSuggestionsChat({ agent }: AiSuggestionsChatProps) {
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder={`Escribe tu mensaje a ${agent.nombre}...`}
+            placeholder={`Escribe tu mensaje a ${activeAgent.nombre}...`}
             className="flex-grow bg-background focus-visible:ring-1 focus-visible:ring-ring border-input text-sm"
             disabled={isLoading || authLoading}
             autoFocus
@@ -350,6 +347,53 @@ export default function AiSuggestionsChat({ agent }: AiSuggestionsChatProps) {
             <span className="sr-only">Enviar</span>
           </Button>
         </form>
+        {isLoadingAgents ? (
+            <div className="flex items-center justify-center h-9 mt-2">
+              <Loader2 size={20} className="animate-spin text-primary" />
+            </div>
+        ) : activeAgent && agents.length > 0 ? (
+             <Popover open={isAgentSelectorOpen} onOpenChange={setIsAgentSelectorOpen}>
+              <PopoverTrigger asChild>
+                  <Button variant="outline" role="combobox" aria-expanded={isAgentSelectorOpen} className="w-full justify-start h-9 font-normal mt-2">
+                      <div className="flex items-center gap-2 truncate flex-grow">
+                          <Avatar className="h-6 w-6">
+                              <AvatarImage src={activeAgent.icono_principal} />
+                              <AvatarFallback />
+                          </Avatar>
+                          <span className="truncate text-sm">{activeAgent.nombre}</span>
+                      </div>
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[350px] p-0 z-50 mb-1">
+                   <Command>
+                      <CommandList>
+                          <CommandGroup>
+                              {agents.map((agentItem) => (
+                              <CommandItem
+                                  key={agentItem.id}
+                                  onSelect={() => handleAgentSelect(agentItem)}
+                                  className="flex items-center gap-2 cursor-pointer text-sm"
+                              >
+                                  <Avatar className="h-6 w-6">
+                                      <AvatarImage src={agentItem.icono_principal} />
+                                      <AvatarFallback />
+                                  </Avatar>
+                                  <span className="flex-grow truncate">{agentItem.nombre}</span>
+                                  <Check
+                                    className={cn(
+                                        "mr-2 h-4 w-4",
+                                        activeAgent?.id === agentItem.id ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                              </CommandItem>
+                              ))}
+                          </CommandGroup>
+                      </CommandList>
+                  </Command>
+              </PopoverContent>
+          </Popover>
+        ) : null }
       </div>
     </div>
   );

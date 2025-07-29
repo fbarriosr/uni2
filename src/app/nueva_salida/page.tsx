@@ -285,8 +285,8 @@ function NuevaSalidaPageContent() {
                 onMonthChange={setCurrentDisplayMonth}
                 todayDate={today}
                 disabled={{ before: today }}
-                upcomingDates={upcomingOutingDates}
                 birthdayInfo={familyBirthdays}
+                upcomingDates={upcomingOutingDates}
                 imageHighlightData={imageHighlightData}
               />
             ) : (

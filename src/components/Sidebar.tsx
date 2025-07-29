@@ -91,7 +91,6 @@ export default function Sidebar({ isCollapsed, user }: SidebarProps) {
                 </Avatar>
                 <div className="flex-grow overflow-hidden">
                     <p className="font-semibold truncate text-sm">{displayName}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                 </div>
                 </div>
             </div>
