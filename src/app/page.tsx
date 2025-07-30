@@ -37,40 +37,43 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen"> { /* Use min-h-screen for full height */}
       {/* Hero Section / Banner - Now a Carousel */}
-      <section className="relative w-full h-[calc(100vh-4rem)]">
+      <section className="relative w-full h-[calc(100vh-4rem)] overflow-hidden">
         <Carousel className="w-full h-full" plugins={[autoplayPlugin]}>
           <CarouselContent>
             {images.map((image, index) => (
               <CarouselItem key={index}>
                 <div
-                  className="w-full h-[calc(100vh-4rem)] flex items-center justify-center text-center bg-cover bg-center"
-                  style={{
-                    backgroundImage: `url('${image}')`,
-                  }}
+                  className="w-full h-[calc(100vh-4rem)] bg-cover bg-center relative"
+                  style={{ backgroundImage: `url('${image}')` }}
                 >
-                  {/* Overlay for text readability */}
-                  <div className="absolute inset-0 bg-black/60"></div>
-                  {/* Content */}
-                  <div className="relative z-10 text-white px-4 max-w-4xl mx-auto">
-                    <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
-                      UNI2: Fines de semana que fortalecen vínculos
-                    </h1>
-                    <p className="text-lg md:text-xl mb-8">
-                      Sabemos que la falta de tiempo y herramientas puede deteriorar silenciosamente el vínculo. UNI2 convierte la planificación de actividades en una oportunidad para conectar, reforzar el apego y construir recuerdos valiosos.
-                    </p>
-                    <Link href="/inicio" passHref>
-                      <Button size="lg">Empezar a crear recuerdos</Button>
-                    </Link>
-                  </div>
+                  {/* Capa oscura para mejorar legibilidad */}
+                  <div className="absolute inset-0 bg-black/30" />
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          {/* Add these lines for the controls */}
+
+          {/* Texto fijo sobre el carrusel */}
+          <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+            <div className="text-white px-4 max-w-4xl mx-auto text-center pointer-events-auto">
+              <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
+                UNI2: Fines de semana que fortalecen vínculos
+              </h1>
+              <p className="text-lg md:text-xl mb-8">
+                Sabemos que la falta de tiempo y herramientas puede deteriorar silenciosamente el vínculo. UNI2 convierte la planificación de actividades en una oportunidad para conectar, reforzar el apego y construir recuerdos valiosos.
+              </p>
+              <Link href="/inicio" passHref>
+                <Button size="lg">Empezar a crear recuerdos</Button>
+              </Link>
+            </div>
+          </div>
+
           <CarouselPrevious />
           <CarouselNext />
         </Carousel>
       </section>
+      
+
       {/* End Hero Section */}
 
       {/* Herramienta para la Conexión Emocional Section */}

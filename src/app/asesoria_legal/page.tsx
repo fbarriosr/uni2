@@ -102,7 +102,7 @@ async function AcademiaLegalContent() {
                 
                 <SectionCard title="Red de Asesores Expertos" icon={Users}>
                     {legalExperts.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {legalExperts.map(expert => (
                                 <LegalExpertCard key={expert.id} expert={expert} />
                             ))}

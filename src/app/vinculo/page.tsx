@@ -77,32 +77,38 @@ const ArticleCard = ({ article }: { article: any }) => (
 );
 
 const ExpertCard = ({ expert }: { expert: any }) => (
-    <Link href={AppRoutes.vinculoExpertDetail(expert.id)} className="block group">
-        <Card className="p-4 text-center h-full flex flex-col justify-between hover:shadow-xl hover:border-primary/50 transition-all duration-300 ease-in-out transform hover:-translate-y-1">
-            <div>
-                <Image 
-                    src={expert.photo || 'https://placehold.co/256x256.png'} 
-                    alt={expert.name} 
-                    width={96} 
-                    height={96} 
-                    className="w-24 h-24 rounded-full mx-auto object-cover mb-4 shadow-lg ring-2 ring-primary/20"
-                    data-ai-hint="expert portrait"
-                />
-                <h3 className="font-bold text-lg text-foreground group-hover:text-primary">{expert.name}</h3>
-                <p className="text-sm font-medium text-primary mb-2">{expert.specialty}</p>
-                 {expert.comentario_ia && (
-                    <p className="text-xs text-muted-foreground italic px-2 mt-1 mb-3 line-clamp-3">
-                        "{expert.comentario_ia}"
-                    </p>
-                )}
-            </div>
-            {expert.lugar_de_trabajo && (
-                <div className="mt-auto pt-3 border-t border-dashed w-full">
-                    <p className="text-xs text-muted-foreground">{expert.lugar_de_trabajo}</p>
-                </div>
-            )}
-        </Card>
-    </Link>
+    <Link
+  href={AppRoutes.vinculoExpertDetail(expert.id)}
+  className="block group w-full max-w-sm mx-auto h-full"
+>
+  <Card
+    className="w-full h-full p-4 text-center flex flex-col justify-between hover:shadow-xl hover:border-primary/50 transition-all duration-300 ease-in-out transform hover:-translate-y-1"
+  >
+    <div>
+      <Image 
+        src={expert.photo || 'https://placehold.co/256x256.png'} 
+        alt={expert.name} 
+        width={96} 
+        height={96} 
+        className="w-24 h-24 rounded-full mx-auto object-cover mb-4 shadow-lg ring-2 ring-primary/20"
+        data-ai-hint="expert portrait"
+      />
+      <h3 className="font-bold text-lg text-foreground group-hover:text-primary">{expert.name}</h3>
+      <p className="text-sm font-medium text-primary mb-2">{expert.specialty}</p>
+      {expert.comentario_ia && (
+        <p className="text-xs text-muted-foreground italic px-2 mt-1 mb-3 line-clamp-3">
+          "{expert.comentario_ia}"
+        </p>
+      )}
+    </div>
+    {expert.lugar_de_trabajo && (
+      <div className="mt-auto pt-3 border-t border-dashed w-full">
+        <p className="text-xs text-muted-foreground">{expert.lugar_de_trabajo}</p>
+      </div>
+    )}
+  </Card>
+</Link>
+
 );
 
 
@@ -191,7 +197,7 @@ async function AcademiaVinculoContent() {
                 </SectionCard>
 
                 <SectionCard title="Red de Expertos Uni2" icon={Star}>
-                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {experts.map(expert => <ExpertCard key={expert.id} expert={expert} />)}
                      </div>
                 </SectionCard>
