@@ -9,6 +9,7 @@ import { redirect } from 'next/navigation';
 import { AppRoutes } from '@/lib/urls';
 import type { ActivityRequestStatus, ItineraryEvent, Activity, FullEvaluation, User } from '@/lib/types';
 import { getUserById, getUsersByIds } from '@/lib/data';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export type SaveSalidaState = {
@@ -78,6 +79,7 @@ export async function saveSalidaPreferences(
       activityFilters: filters,
       otherPreference: otherPreference || null,
       createdAt: serverTimestamp(),
+      isPublic: false, // Initialize sharing as false
     });
 
     revalidatePath('/nueva_salida');
@@ -301,6 +303,8 @@ export async function getSalidaById(salidaId: string, userId: string) {
                     to: data.dateRange.to ? (data.dateRange.to).toDate() : null,
                 },
                  evaluationSubmitted: data.evaluationSubmitted || false,
+                 shareToken: data.shareToken || null,
+                 isPublic: data.isPublic || false,
             };
         }
         return null;
@@ -477,3 +481,48 @@ export async function getEvaluation(salidaId: string, userId: string): Promise<F
         return null;
     }
 }
+
+
+// --- Sharing Actions ---
+
+export async function manageShareLinkAction(salidaId: string, userId: string): Promise<{ success: boolean; url?: string; message: string }> {
+  if (!userId || !salidaId) {
+    return { success: false, message: "Faltan datos para compartir." };
+  }
+  try {
+    const user = await getUserById(userId);
+    if (!user) return { success: false, message: 'Usuario no encontrado.' };
+    const familyHeadUid = user.role === 'hijo' && user.parentUid ? user.parentUid : userId;
+    if (user.role === 'hijo' && user.id !== familyHeadUid) {
+      return { success: false, message: 'Solo el organizador puede compartir la salida.' };
+    }
+
+    const salidaRef = doc(db, 'users', familyHeadUid, 'salidas', salidaId);
+    const salidaSnap = await getDoc(salidaRef);
+    if (!salidaSnap.exists()) {
+      return { success: false, message: 'Salida no encontrada.' };
+    }
+
+    let token = salidaSnap.data().shareToken;
+    if (!token) {
+      token = uuidv4();
+      await updateDoc(salidaRef, { shareToken: token, isPublic: true });
+    } else {
+       // Optionally toggle isPublic if needed, or just ensure it's on
+       if(!salidaSnap.data().isPublic) {
+         await updateDoc(salidaRef, { isPublic: true });
+       }
+    }
+    
+    revalidatePath(AppRoutes.salidas.itinerario(salidaId));
+    
+    const url = new URL(AppRoutes.salidas.public(token), process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000').toString();
+    return { success: true, url, message: 'Enlace generado.' };
+
+  } catch (error) {
+    console.error("Error creating share link:", error);
+    return { success: false, message: "Error del servidor al crear el enlace para compartir." };
+  }
+}
+
+    
