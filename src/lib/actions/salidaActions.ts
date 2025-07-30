@@ -484,14 +484,27 @@ export async function getEvaluation(salidaId: string, userId: string): Promise<F
 
 
 // --- Sharing Actions ---
+type ShareState = {
+  success: boolean;
+  url?: string;
+  message: string;
+};
 
-export async function manageShareLinkAction(salidaId: string, userId: string): Promise<{ success: boolean; url?: string; message: string }> {
+export async function manageShareLinkAction(
+  prevState: ShareState,
+  formData: FormData
+): Promise<ShareState> {
+  const userId = formData.get('userId') as string;
+  const salidaId = formData.get('salidaId') as string;
+
   if (!userId || !salidaId) {
     return { success: false, message: "Faltan datos para compartir." };
   }
   try {
     const user = await getUserById(userId);
-    if (!user) return { success: false, message: 'Usuario no encontrado.' };
+    if (!user) {
+      return { success: false, message: 'Usuario no encontrado.' };
+    }
 
     const familyHeadUid = user.role === 'hijo' && user.parentUid ? user.parentUid : userId;
     
@@ -533,4 +546,3 @@ export async function manageShareLinkAction(salidaId: string, userId: string): P
   }
 }
     
-

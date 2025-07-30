@@ -2,22 +2,11 @@
 
 'use client';
 
-import { Calendar, Share2 } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import JourneyProgressBar from './JourneyProgressBar';
 import CancelOutingButton from './CancelOutingButton';
 import type { ReactNode } from 'react';
-import { Button } from '../ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { manageShareLinkAction } from '@/lib/actions/salidaActions';
-import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-
+import ShareButton from './ShareButton'; // Importar el nuevo componente
 
 interface SalidaPageHeaderProps {
   title: string;
@@ -36,29 +25,7 @@ export default function SalidaPageHeader({
   currentStep,
   children,
 }: SalidaPageHeaderProps) {
-    const { toast } = useToast();
-    const [isSharing, setIsSharing] = useState(false);
-    
-    const handleShare = async () => {
-        if (!userId) return;
-        setIsSharing(true);
-        const result = await manageShareLinkAction(salidaId, userId);
-        if (result.success && result.url) {
-            navigator.clipboard.writeText(result.url);
-            toast({
-                title: "Enlace Copiado",
-                description: "El enlace para compartir se ha copiado a tu portapapeles.",
-            });
-        } else {
-            toast({
-                title: "Error al compartir",
-                description: result.message || "No se pudo generar el enlace para compartir.",
-                variant: "destructive",
-            });
-        }
-        setIsSharing(false);
-    };
-
+  
   return (
     <header className="mb-8">
       <div className="relative p-6 bg-card rounded-xl shadow-lg border">
@@ -74,18 +41,7 @@ export default function SalidaPageHeader({
             </div>
              {userId && (
               <div className="shrink-0 flex items-center gap-2">
-                 <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="outline" size="icon" onClick={handleShare} disabled={isSharing}>
-                                {isSharing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Compartir Plan (vista pública)</p>
-                        </TooltipContent>
-                    </Tooltip>
-                 </TooltipProvider>
+                 <ShareButton salidaId={salidaId} userId={userId} />
                 <CancelOutingButton salidaId={salidaId} userId={userId} />
               </div>
             )}
