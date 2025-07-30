@@ -13,6 +13,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { AppRoutes } from '@/lib/urls';
 import { cn } from '@/lib/utils';
 import { Separator } from './ui/separator';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 
 interface NavbarProps {
   user: User | null;
@@ -34,6 +36,7 @@ export default function Navbar({
   const { toast } = useToast();
   const router = useRouter();
   const pathname = usePathname();
+  const isMobile = useIsMobile();
 
   const handleLogout = async () => {
     try {
@@ -60,7 +63,7 @@ export default function Navbar({
     <header className="fixed top-0 left-0 right-0 h-[var(--header-height)] bg-card/95 backdrop-blur-sm shadow-md z-40 border-b">
       <div className="container mx-auto px-4 h-full flex justify-between items-center">
         <div className="flex items-center gap-2">
-          {showUserControls && isSidebarVisible && (
+          {showUserControls && isSidebarVisible && isMobile && (
             <Button
               variant="ghost"
               size="icon"
