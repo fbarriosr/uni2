@@ -186,28 +186,36 @@ export default function FamiliaClientPage() {
             <div className="space-y-4">
                 {familyMembers.length > 0 ? (
                     familyMembers.map(member => (
-                        <Card key={member.id} className="flex items-center p-4">
-                            <Avatar className="h-16 w-16 mr-4">
-                                <AvatarImage src={member.avatarUrl} alt={member.name} />
-                                <AvatarFallback><UserIcon /></AvatarFallback>
-                            </Avatar>
-                            <div className="flex-grow">
-                                <p className="font-bold text-lg">{member.nickname || member.name}</p>
-                                <p className="text-sm text-muted-foreground">{member.email}</p>
-                                {member.id === appUser?.id && (
-                                    <Badge variant="outline" className="mt-1">Padre/Madre</Badge>
+                        <Card key={member.id} className="flex flex-col md:flex-row md:items-center p-4 gap-4">
+                            <div className="flex items-center w-full md:w-auto">
+                                <Avatar className="h-16 w-16 mr-4">
+                                    <AvatarImage src={member.avatarUrl} alt={member.name} />
+                                    <AvatarFallback><UserIcon /></AvatarFallback>
+                                </Avatar>
+                                <div className="flex-grow">
+                                    <p className="font-bold text-lg">{member.nickname || member.name}</p>
+                                    <p className="text-sm text-muted-foreground">{member.email}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between w-full md:w-auto md:ml-auto gap-4">
+                                <div className="flex flex-col items-start md:items-end gap-1">
+                                    {member.id === appUser?.id && (
+                                        <Badge variant="outline">Padre/Madre</Badge>
+                                    )}
+                                    <Badge variant={member.status === 'active' ? 'default' : 'secondary'}>
+                                        {member.status === 'active' ? 'Activo' : 'Invitado'}
+                                    </Badge>
+                                </div>
+                                {loggedInUserRole !== 'hijo' && appUser && member.id !== appUser.id ? (
+                                <DeleteFamilyMemberButton 
+                                    parentUid={appUser.id} 
+                                    childUid={member.id} 
+                                    childName={member.name || 'miembro'}
+                                />
+                                ) : (
+                                    <div className="w-10 h-10" /> // Placeholder for alignment
                                 )}
                             </div>
-                            <Badge variant={member.status === 'active' ? 'default' : 'secondary'} className="mr-4">
-                                {member.status === 'active' ? 'Activo' : 'Invitado'}
-                            </Badge>
-                            {loggedInUserRole !== 'hijo' && appUser && member.id !== appUser.id && (
-                              <DeleteFamilyMemberButton 
-                                  parentUid={appUser.id} 
-                                  childUid={member.id} 
-                                  childName={member.name || 'miembro'}
-                              />
-                            )}
                         </Card>
                     ))
                 ) : (
