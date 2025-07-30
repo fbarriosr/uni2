@@ -1,14 +1,76 @@
 
 import AuthCheck from '@/components/AuthCheck';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Gavel, Users, ArrowRight } from 'lucide-react';
+import { FileText, Gavel, Users, ArrowRight, BookOpen, Link as LinkIcon, Scale, Shield, Landmark as LandmarkIcon, Globe2, AlertTriangle, Users2 } from 'lucide-react';
 import Image from 'next/image';
 import { Suspense } from 'react';
 import { getLegalExperts } from '@/lib/data';
 import type { Expert } from '@/lib/types';
 import Link from 'next/link';
 import { AppRoutes } from '@/lib/urls';
+import { Badge } from '@/components/ui/badge';
+
+
+// --- Data for Laws ---
+const laws = [
+    {
+        title: "Código Civil de Chile",
+        description: "Regula los derechos y deberes entre padres e hijos, incluyendo la patria potestad, el cuidado personal y la obligación de alimentos.",
+        articles: ["Art. 224–228: Cuidado personal y alimentos.", "Art. 232–243: Patria potestad."],
+        link: "https://www.bcn.cl/leychile/navegar?idNorma=172986",
+        icon: BookOpen,
+    },
+    {
+        title: "Ley N° 19.947 – Nueva Ley de Matrimonio Civil",
+        description: "Regula el matrimonio, divorcio, nulidad y separación judicial. Establece el divorcio de común acuerdo o por cese de convivencia.",
+        articles: ["Art. 55 y siguientes: Procedimientos y requisitos del divorcio."],
+        link: "https://www.bcn.cl/leychile/navegar?idNorma=225128",
+        icon: Scale,
+    },
+    {
+        title: "Ley N° 20.680 – Cuidado Personal y Corresponsabilidad Parental",
+        description: "Permite a ambos padres solicitar el cuidado personal del hijo y establece el principio de corresponsabilidad, eliminando la presunción a favor de la madre.",
+        articles: ["Publicada en: 2013."],
+        link: "https://www.bcn.cl/leychile/navegar?idNorma=1059186",
+        icon: Users2,
+    },
+    {
+        title: "Ley N° 14.908 – Pago de Pensiones de Alimentos",
+        description: "Regula la obligación legal de pagar pensión alimenticia, estableciendo mecanismos de cobro, sanciones y medidas de apremio.",
+        articles: ["Art. 1–15: Procedimientos y sanciones por incumplimiento."],
+        link: "https://www.bcn.cl/leychile/navegar?idNorma=28384",
+        icon: Gavel,
+    },
+    {
+        title: "Ley N° 19.968 – Tribunales de Familia",
+        description: "Crea los Tribunales de Familia y define sus competencias, incluyendo materias como cuidado personal, relación directa y regular, y alimentos.",
+        articles: ["Art. 8: Competencia de los tribunales."],
+        link: "https://www.bcn.cl/leychile/navegar?idNorma=229557",
+        icon: LandmarkIcon,
+    },
+    {
+        title: "Ley N° 21.389 – Registro Nacional de Deudores de Pensiones de Alimentos",
+        description: "Establece un registro público para deudores, permitiendo medidas como retención de fondos y bloqueo de trámites.",
+        articles: ["Art. 2–9: Inscripción, sanciones y medidas coercitivas."],
+        link: "https://www.bcn.cl/leychile/navegar?idNorma=1167484",
+        icon: FileText,
+    },
+    {
+        title: "Ley N° 20.066 – Ley de Violencia Intrafamiliar (VIF)",
+        description: "Protege frente a violencia física, psicológica y económica en el entorno familiar, incluyendo medidas cautelares y sanciones.",
+        articles: [],
+        link: "https://www.bcn.cl/leychile/navegar?idNorma=242633",
+        icon: AlertTriangle,
+    },
+    {
+        title: "Convención sobre los Derechos del Niño (CDN)",
+        description: "Ratificada por Chile en 1990, tiene supremacía sobre leyes internas si protege mejor al niño. Destaca el interés superior y el derecho a ser escuchado.",
+        articles: ["Art. 3: Interés superior del niño.", "Art. 9: Derecho a mantener relación con ambos padres.", "Art. 12: Derecho a ser escuchado."],
+        link: "https://www.un.org/es/events/childrenday/convention.shtml",
+        icon: Globe2,
+    }
+];
 
 // --- Reusable Components for this Page ---
 
@@ -24,11 +86,45 @@ const SectionCard = ({ title, icon: Icon, children }: { title: string, icon: Rea
     </Card>
 );
 
-const PlaceholderCard = () => (
-    <Card className="h-40 flex items-center justify-center bg-muted/50 border-dashed">
-        <p className="text-muted-foreground">Contenido Próximamente</p>
-    </Card>
-);
+
+const LawCard = ({ law }: { law: typeof laws[0] }) => {
+    const { title, description, articles, link, icon: Icon } = law;
+    return (
+        <Card className="h-full flex flex-col">
+            <CardHeader className="flex flex-row items-start gap-4">
+                <div className="p-3 bg-primary/10 rounded-lg">
+                    <Icon className="h-6 w-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                    <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
+                </div>
+            </CardHeader>
+            <CardContent className="flex-grow">
+                <p className="text-sm text-muted-foreground mb-4">{description}</p>
+                {articles.length > 0 && (
+                    <div>
+                        <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-2">Puntos Clave</h4>
+                        <ul className="space-y-1 text-sm text-muted-foreground">
+                            {articles.map((article, i) => (
+                                <li key={i} className="flex items-start">
+                                    <ArrowRight className="h-3 w-3 mr-2 mt-1 shrink-0 text-primary" />
+                                    <span>{article}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+            </CardContent>
+            <CardFooter>
+                 <Button asChild className="w-full" variant="outline">
+                    <a href={link} target="_blank" rel="noopener noreferrer">
+                        <LinkIcon className="mr-2 h-4 w-4" /> Ver texto completo
+                    </a>
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+};
 
 const LegalExpertCard = ({ expert }: { expert: Expert }) => (
     <Link href={AppRoutes.asesoriaLegalExpertDetail(expert.id)} className="block group">
@@ -59,6 +155,11 @@ const LegalExpertCard = ({ expert }: { expert: Expert }) => (
     </Link>
 );
 
+const PlaceholderCard = () => (
+    <Card className="h-40 flex items-center justify-center bg-muted/50 border-dashed">
+        <p className="text-muted-foreground">Contenido Próximamente</p>
+    </Card>
+);
 
 async function AcademiaLegalContent() {
     // In a real scenario, you would fetch data for articles, laws, and experts here.
@@ -84,7 +185,6 @@ async function AcademiaLegalContent() {
             <div className="container mx-auto py-8 space-y-12">
                 <SectionCard title="Artículos" icon={FileText}>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {/* Placeholder for Articles */}
                         <PlaceholderCard />
                         <PlaceholderCard />
                         <PlaceholderCard />
@@ -93,10 +193,9 @@ async function AcademiaLegalContent() {
 
                 <SectionCard title="Leyes Vigentes" icon={Gavel}>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {/* Placeholder for Laws */}
-                        <PlaceholderCard />
-                        <PlaceholderCard />
-                        <PlaceholderCard />
+                       {laws.map((law, index) => (
+                            <LawCard key={index} law={law} />
+                        ))}
                     </div>
                 </SectionCard>
                 
