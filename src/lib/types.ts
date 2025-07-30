@@ -113,6 +113,8 @@ export interface UserOuting {
   status: 'scheduled' | 'completed' | 'cancelled';
   createdAt: string; // Changed to string
   evaluationSubmitted?: boolean;
+  shareToken?: string; // For public sharing
+  isPublic?: boolean; // To enable/disable sharing
 }
 
 export interface Coupon {
