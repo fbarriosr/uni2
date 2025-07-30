@@ -18,7 +18,6 @@ import { Loader2, Users, AlertCircle, Calendar, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SuggestionCategorySection from '@/components/home/SuggestionCategorySection';
 import FeaturedSuggestionSection from '@/components/home/FeaturedSuggestionSection';
-import HomeRecuerdosSection from '@/components/home/HomeRecuerdosSection';
 import SalidaPageHeader from './SalidaPageHeader'; // Import the new header
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import ParticipantSelector from '@/components/nueva_salida/ParticipantGroupSelector';
@@ -26,6 +25,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import MapDisplayLoader from '@/components/MapDisplayLoader';
 import { Input } from '@/components/ui/input';
+import HorizontalCardCarousel from '../HorizontalCardCarousel';
 
 
 
@@ -387,7 +387,15 @@ export default function SalidaDetailClientPage({ salidaId, initialActivities }: 
                 {showSuggestions && <SuggestionCategorySection title="Sugerencias" activities={filteredSuggestions} salidaId={salidaId} />}
                 {showLibreGratuito && <SuggestionCategorySection title="Libre y gratuito" activities={filteredLibreGratuito} salidaId={salidaId} />} {/* Use filtered list */}
                 {showSoloParaUstedes && <FeaturedSuggestionSection title="Solo para ustedes" activities={filteredSoloParaUstedes} salidaId={salidaId} />} {/* Use filtered list */}
-                {showRecuerdos && recuerdos.length > 0 && <HomeRecuerdosSection recuerdos={recuerdos} isLoading={loading} />} {/* Remember section is not filtered by this bar */}
+                
+                {showRecuerdos && (
+                    <HorizontalCardCarousel
+                        title="Recuerdos Memorables de Salidas Pasadas"
+                        items={recuerdos}
+                        isLoading={loading}
+                        emptyMessage="Aquí aparecerán tus aventuras una vez completadas."
+                    />
+                )}
 
                 {/* Message when no activities match search term */}
                 {!showMyActivities && !showSuggestions && !showLibreGratuito && !showSoloParaUstedes && searchTerm && (
