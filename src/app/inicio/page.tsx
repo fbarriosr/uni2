@@ -306,10 +306,10 @@ export default function InicioPage() {
             }}
           >
             <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-center p-4">
-              <h2 className="text-3xl font-bold text-white mb-4">No solo planifiques, conecta</h2>
-              <h3 className="text-3xl font-bold text-white mb-4">Accede a Herramientas y reflexiones</h3>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">No solo planifiques, conecta</h2>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-4">Accede a Herramientas y reflexiones</h3>
               <Link href="/vinculo" passHref>
-                <Button variant="secondary" size="lg">Descubre más</Button>
+                <Button variant="secondary" size="default">Descubre más</Button>
               </Link>
             </div>
           </div>
