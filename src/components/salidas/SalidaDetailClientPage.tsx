@@ -369,7 +369,7 @@ export default function SalidaDetailClientPage({ salidaId, initialActivities }: 
         </div>
 
         <main className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <aside className="lg:col-span-1 h-[60vh] lg:h-[calc(100vh_-_12rem)] lg:sticky top-24 rounded-lg overflow-hidden shadow-lg mt-8 lg:mt-0 order-first lg:order-last">
+            <aside className="lg:col-span-1 h-[50vh] lg:h-[calc(100vh_-_12rem)] lg:sticky top-24 rounded-lg overflow-hidden shadow-lg mt-8 lg:mt-0 order-first lg:order-last">
                 {googleMapsApiKey ? (
                     <MapDisplayLoader 
                         activities={activitiesForMap}
