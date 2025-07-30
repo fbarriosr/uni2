@@ -2,13 +2,11 @@
 import AuthCheck from '@/components/AuthCheck';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { BookOpen, FileText, Star, BookMarked, ShieldQuestion, ArrowRight, Lightbulb, Link as LinkIcon, BrainCircuit } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
     getActiveMicroLessons,
-    getActiveArticles,
     getExperts,
 } from '@/lib/data';
 import { Suspense } from 'react';
@@ -37,7 +35,7 @@ const SectionCard = ({ title, icon: Icon, children, href }: { title: string, ico
 
 const MicroLessonCard = ({ lesson }: { lesson: any }) => (
     <Card className="overflow-hidden group text-center">
-        <Image src={lesson.image} alt={lesson.title} width={300} height={300} className="w-full aspect-square object-cover" />
+        <Image src={lesson.image || 'https://placehold.co/300x300.png'} alt={lesson.title} width={300} height={300} className="w-full aspect-square object-cover" data-ai-hint="lesson illustration" />
         <div className="p-3">
             <h3 className="font-semibold text-md truncate">{lesson.title}</h3>
             <p className="text-xs text-muted-foreground truncate">{lesson.description}</p>
@@ -47,7 +45,7 @@ const MicroLessonCard = ({ lesson }: { lesson: any }) => (
 
 const ExpertCard = ({ expert }: { expert: any }) => (
     <Link
-  href={AppRoutes.vinculoExpertDetail(expert.id)}
+  href={`${AppRoutes.vinculoExpertDetail(expert.id)}#expert-image`}
   className="block group w-full h-full"
 >
   <Card
@@ -86,7 +84,7 @@ const DetailedReadingCard = ({ reading }: { reading: { emoji: string, title: str
     <CardHeader>
       <CardTitle className="text-lg md:text-xl font-headline text-foreground flex items-start gap-3">
         <span className="text-2xl mt-1">{reading.emoji}</span>
-        <span>{reading.title}</span>
+        <span className="leading-tight">{reading.title}</span>
       </CardTitle>
     </CardHeader>
     <CardContent className="flex-grow space-y-4">
@@ -120,7 +118,7 @@ const DetailedArticleCard = ({ article }: { article: { emoji: string, title: str
         <CardHeader>
             <CardTitle className="text-lg md:text-xl font-headline text-foreground flex items-start gap-3">
                 <span className="text-2xl mt-1">{article.emoji}</span>
-                <span>{article.title}</span>
+                <span className="leading-tight">{article.title}</span>
             </CardTitle>
         </CardHeader>
         <CardContent className="flex-grow space-y-4">
@@ -308,3 +306,5 @@ export default function VinculoPage() {
         </AuthCheck>
     );
 }
+
+    

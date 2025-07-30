@@ -68,6 +68,7 @@ async function ExpertDetailContent({ expertId }: { expertId: string }) {
         <div className="container mx-auto py-12 px-4 max-w-5xl">
             <header className="flex flex-col md:flex-row items-center gap-8 mb-10 text-center md:text-left">
                 <Image
+                    id="expert-image"
                     src={expert.photo || 'https://placehold.co/256x256.png'}
                     alt={expert.name}
                     width={192}
@@ -183,3 +184,5 @@ export default function ExpertDetailPage({ params }: { params: { id: string } })
         </AuthCheck>
     );
 }
+
+    
