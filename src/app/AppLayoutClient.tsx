@@ -59,7 +59,7 @@ export default function AppLayoutClient({
     return () => unsubscribe();
   }, []);
 
-  // Fetch agents and set active agent based on route
+  // Fetch agents and set active agent
   useEffect(() => {
     async function fetchAndSetAgents() {
       if (!currentUser) {
@@ -76,22 +76,12 @@ export default function AppLayoutClient({
         });
         setAgents(sortedAgents);
         
-        const uni2Agent = sortedAgents.find(a => a.nombre === 'Asistente UNI2');
-        const legalAgent = sortedAgents.find(a => a.nombre === 'Asesor Legal');
-        const vinculoAgent = sortedAgents.find(a => a.nombre === 'Vínculo Inteligente');
-
-        let agentToSetActive = activeAgent; // Keep current if possible
-
-        if (pathname.startsWith(AppRoutes.asesoriaLegal) && legalAgent) {
-            agentToSetActive = legalAgent;
-        } else if (pathname.startsWith(AppRoutes.vinculo) && vinculoAgent) {
-            agentToSetActive = vinculoAgent;
-        } else if (!activeAgent && uni2Agent) { // Only set default if no agent is active
-            agentToSetActive = uni2Agent;
-        } else if (!activeAgent && sortedAgents.length > 0) {
-            agentToSetActive = sortedAgents[0];
+        let agentToSetActive = activeAgent;
+        if (!agentToSetActive) {
+            const uni2Agent = sortedAgents.find(a => a.nombre === 'Asistente UNI2');
+            agentToSetActive = uni2Agent || sortedAgents[0] || null;
         }
-
+        
         setActiveAgent(agentToSetActive);
 
       } catch (error) {
@@ -107,7 +97,8 @@ export default function AppLayoutClient({
     }
     fetchAndSetAgents();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toast, pathname, currentUser]); // Rerun when user logs in/out
+  }, [toast, currentUser]); // Rerun when user logs in/out
+
 
   const handleToggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -124,7 +115,19 @@ export default function AppLayoutClient({
     <ThemeProvider>
       <FilterProvider>
         <div className="flex h-screen bg-background">
-          {showSidebar && <Sidebar isCollapsed={isSidebarCollapsed} user={currentUser} />}
+           {showSidebar && (
+            <>
+              <Sidebar isCollapsed={isSidebarCollapsed} user={currentUser} />
+              {/* Overlay for mobile when sidebar is open */}
+              {!isSidebarCollapsed && (
+                <div 
+                  className="fixed inset-0 z-30 bg-black/50 md:hidden"
+                  onClick={handleToggleSidebar}
+                  aria-hidden="true"
+                />
+              )}
+            </>
+          )}
           
           <div className="flex flex-col flex-1 overflow-hidden">
             <Navbar 
@@ -134,6 +137,10 @@ export default function AppLayoutClient({
               onToggleSidebar={handleToggleSidebar}
               isSidebarVisible={showSidebar}
               onToggleChatbar={handleToggleChatbar}
+              agents={agents}
+              activeAgent={activeAgent}
+              setActiveAgent={setActiveAgent}
+              isLoadingAgents={loadingAgents}
             />
             <main className={cn(
                 "flex-1 overflow-y-auto overflow-x-hidden",
@@ -159,9 +166,6 @@ export default function AppLayoutClient({
             )}>
               <LemonDropChat 
                 activeAgent={activeAgent} 
-                agents={agents}
-                setActiveAgent={setActiveAgent}
-                isLoading={loadingAgents} 
               />
             </aside>
           )}

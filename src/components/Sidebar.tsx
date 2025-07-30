@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -62,22 +63,22 @@ export default function Sidebar({ isCollapsed, user }: SidebarProps) {
   ];
 
   return (
-    <aside className={cn(
-      "hidden md:flex flex-col flex-shrink-0 bg-card text-card-foreground border-r border-border transition-all duration-300 ease-in-out overflow-hidden",
-      isCollapsed ? "w-0 p-0 border-r-0" : "w-60"
+     <aside className={cn(
+        "fixed top-0 left-0 h-full z-40 flex flex-col flex-shrink-0 bg-card text-card-foreground border-r border-border transition-transform duration-300 ease-in-out md:relative md:translate-x-0",
+        isCollapsed ? "-translate-x-full" : "translate-x-0 w-60"
     )}>
        <div className={cn("flex items-center h-[var(--header-height)] px-4 w-full", isCollapsed ? 'justify-center' : 'justify-start')}>
-          {!isCollapsed && <span className="text-xl font-headline text-primary">UNI2</span>}
+          <Link href={user ? "/inicio" : "/"} className="text-xl font-headline text-primary hover:opacity-80 transition-opacity">
+            UNI2
+          </Link>
         </div>
       
-      {/* Sidebar Content: Conditionally rendered based on collapsed state */}
-      {!isCollapsed && (
         <div className="flex flex-col h-full">
             <Separator className="bg-border/50" />
 
             <nav className="flex flex-col gap-2 flex-grow mt-4 px-4">
                 {navItems.map((item) => (
-                    <NavLink key={item.href} {...item} isCollapsed={isCollapsed} />
+                    <NavLink key={item.href} {...item} isCollapsed={false} />
                 ))}
             </nav>
 
@@ -95,7 +96,6 @@ export default function Sidebar({ isCollapsed, user }: SidebarProps) {
                 </div>
             </div>
         </div>
-      )}
     </aside>
   );
 }
