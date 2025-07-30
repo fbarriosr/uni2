@@ -45,7 +45,7 @@ const LegalExpertCard = ({ expert }: { expert: Expert }) => (
                 <h3 className="font-bold text-lg text-foreground group-hover:text-primary">{expert.name}</h3>
                 <p className="text-sm font-medium text-primary mb-2">{expert.specialty}</p>
                  {expert.comentario_ia && (
-                    <p className="text-xs text-muted-foreground italic px-2 mt-1 mb-3">
+                    <p className="text-xs text-muted-foreground italic px-2 mt-1 mb-3 line-clamp-3">
                         "{expert.comentario_ia}"
                     </p>
                 )}
