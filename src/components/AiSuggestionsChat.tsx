@@ -34,10 +34,10 @@ interface Message {
 }
 
 interface AiSuggestionsChatProps {
-  activeAgent: Agent;
+  activeAgent: Agent | null;
   agents: Agent[];
   setActiveAgent: (agent: Agent) => void;
-  isLoadingAgents: boolean;
+  isLoading: boolean;
 }
 
 // Custom animation for wave emoji
@@ -64,12 +64,7 @@ const AnimateWave = () => (
 );
 
 
-export default function AiSuggestionsChat({
-  activeAgent,
-  agents,
-  setActiveAgent,
-  isLoadingAgents,
-}: AiSuggestionsChatProps) {
+export default function AiSuggestionsChat({ activeAgent, agents, setActiveAgent, isLoading: isLoadingAgents }: AiSuggestionsChatProps) {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -125,7 +120,7 @@ export default function AiSuggestionsChat({
     }
 
     const trimmedInput = textInput.trim();
-    if (!trimmedInput) return;
+    if (!trimmedInput || !activeAgent) return;
 
     if (typeof eOrText !== 'string') {
         setInputValue('');
@@ -144,6 +139,7 @@ export default function AiSuggestionsChat({
       avatarUrl: currentUser?.avatarUrl,
       avatarHint: "user profile",
       userFallbackName: userFallbackName.toUpperCase(),
+      quickReplies: [],
     };
 
     const historyForAi = messages.map(m => ({
@@ -170,7 +166,7 @@ export default function AiSuggestionsChat({
         id: Date.now().toString() + '-ai',
         role: 'assistant',
         content: result.aiResponse,
-        activities: result.foundActivities as Activity[] || [],
+        activities: result.foundActivities || [],
         timestamp: new Date(),
         avatarUrl: activeAgent.icono_principal,
         avatarHint: activeAgent.rol,
@@ -198,6 +194,7 @@ export default function AiSuggestionsChat({
         timestamp: new Date(),
         avatarUrl: activeAgent.icono_secundario,
         avatarHint: "error icon",
+        quickReplies: [],
       };
       setMessages((prevMessages) => [...prevMessages, errorResponseMessage]);
     } finally {
@@ -210,6 +207,16 @@ export default function AiSuggestionsChat({
     setActiveAgent(selectedAgent);
     setIsAgentSelectorOpen(false);
   };
+
+  if (!activeAgent) {
+     return (
+        <div className="flex flex-col h-full bg-card shadow-xl overflow-hidden items-center justify-center p-4 text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+            <p className="text-muted-foreground">Cargando agente...</p>
+        </div>
+     );
+  }
+
 
   return (
     <div className="flex flex-col h-full bg-background text-foreground">
@@ -351,7 +358,7 @@ export default function AiSuggestionsChat({
             <div className="flex items-center justify-center h-9 mt-2">
               <Loader2 size={20} className="animate-spin text-primary" />
             </div>
-        ) : activeAgent && agents.length > 0 ? (
+        ) : activeAgent && agents && agents.length > 0 ? (
              <Popover open={isAgentSelectorOpen} onOpenChange={setIsAgentSelectorOpen}>
               <PopoverTrigger asChild>
                   <Button variant="outline" role="combobox" aria-expanded={isAgentSelectorOpen} className="w-full justify-start h-9 font-normal mt-2">
