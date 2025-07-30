@@ -492,10 +492,11 @@ export async function manageShareLinkAction(salidaId: string, userId: string): P
   try {
     const user = await getUserById(userId);
     if (!user) return { success: false, message: 'Usuario no encontrado.' };
-    
+
     const familyHeadUid = user.role === 'hijo' && user.parentUid ? user.parentUid : userId;
-    if (user.role === 'hijo' && user.id !== familyHeadUid) {
-      return { success: false, message: 'Solo el organizador puede compartir la salida.' };
+    
+    if (!familyHeadUid) {
+      return { success: false, message: 'No se pudo determinar el grupo familiar.' };
     }
 
     const salidaRef = doc(db, 'users', familyHeadUid, 'salidas', salidaId);
@@ -509,18 +510,21 @@ export async function manageShareLinkAction(salidaId: string, userId: string): P
     let isCurrentlyPublic = salidaSnap.data().isPublic;
 
     if (!token) {
-      // If the token doesn't exist, generate it and set isPublic to true.
       token = uuidv4();
       await updateDoc(salidaRef, { shareToken: token, isPublic: true });
     } else if (!isCurrentlyPublic) {
-      // If the token exists but the outing is not public, just make it public.
       await updateDoc(salidaRef, { isPublic: true });
     }
     
-    revalidatePath(AppRoutes.salidas.itinerario(salidaId)); // Revalidate the page
+    revalidatePath(AppRoutes.salidas.itinerario(salidaId));
     
-    // Construct the URL using the (potentially new) token
-    const url = new URL(AppRoutes.salidas.public(token), process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000').toString();
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    if (!baseUrl) {
+      console.error("NEXT_PUBLIC_BASE_URL is not set.");
+      throw new Error("Missing server configuration for base URL.");
+    }
+    
+    const url = new URL(AppRoutes.salidas.public(token), baseUrl).toString();
     return { success: true, url: url, message: 'Enlace generado.' };
 
   } catch (error) {
@@ -529,3 +533,4 @@ export async function manageShareLinkAction(salidaId: string, userId: string): P
   }
 }
     
+
