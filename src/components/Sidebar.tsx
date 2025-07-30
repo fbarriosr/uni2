@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { Settings, Users, Shield, Home } from 'lucide-react';
+import { Settings, Users, Shield, Home, X } from 'lucide-react';
 import type { User as AppUser } from '@/lib/types';
 import { AppRoutes } from '@/lib/urls';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -58,6 +58,7 @@ export default function Sidebar({ isCollapsed, user, onToggleSidebar }: SidebarP
   const isAdmin = user?.role === 'admin';
   const displayName = user?.nickname || user?.name || 'Usuario';
   const fallbackLetter = displayName.charAt(0).toUpperCase();
+  const isMobile = useIsMobile();
 
   const navItems = [
     { href: AppRoutes.inicio, icon: Home, label: 'Inicio' },
@@ -76,13 +77,19 @@ export default function Sidebar({ isCollapsed, user, onToggleSidebar }: SidebarP
 
   return (
      <aside className={cn(
-        "fixed top-0 left-0 h-full z-50 flex flex-col flex-shrink-0 bg-card text-card-foreground border-r border-border transition-all duration-300 ease-in-out",
+        "fixed top-0 left-0 h-full z-50 flex flex-col flex-shrink-0 bg-card text-card-foreground border-r border-border transition-transform duration-300 ease-in-out",
         isCollapsed ? "w-64 md:w-16 -translate-x-full md:translate-x-0" : "w-64 translate-x-0"
     )}>
-       <div className={cn("flex items-center h-[var(--header-height)] px-4 w-full", isCollapsed && 'md:justify-center')}>
+       <div className={cn("flex items-center justify-between h-[var(--header-height)] px-4 w-full")}>
           <Link href={user ? "/inicio" : "/"} className="text-xl font-headline text-primary hover:opacity-80 transition-opacity whitespace-nowrap overflow-hidden">
             {(isCollapsed && !isMobile) ? 'U2' : 'UNI2'}
           </Link>
+          {(!isCollapsed || isMobile) && (
+            <Button variant="ghost" size="icon" onClick={onToggleSidebar} className="md:hidden">
+              <X className="h-5 w-5" />
+              <span className="sr-only">Cerrar menú</span>
+            </Button>
+          )}
         </div>
       
         <div className="flex flex-col h-full">
