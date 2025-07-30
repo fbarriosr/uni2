@@ -27,7 +27,7 @@ export default function AppLayoutClient({
   children: ReactNode;
 }) {
   const isMobile = useIsMobile();
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(isMobile ?? true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [activeAddress, setActiveAddress] = useState<Address | null>(null);
@@ -39,12 +39,6 @@ export default function AppLayoutClient({
   const [agents, setAgents] = useState<Agent[]>([]);
   const [activeAgent, setActiveAgent] = useState<Agent | null>(null);
   const [loadingAgents, setLoadingAgents] = useState(true);
-  
-    useEffect(() => {
-        if (isMobile !== null) {
-            setIsSidebarCollapsed(isMobile);
-        }
-    }, [isMobile]);
 
   // Fetch user data
   useEffect(() => {
@@ -108,7 +102,7 @@ export default function AppLayoutClient({
 
 
   const handleToggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
+    setIsSidebarOpen(!isSidebarOpen);
   };
   
   const handleToggleChatbar = () => {
@@ -124,21 +118,25 @@ export default function AppLayoutClient({
         <div className="flex h-screen bg-background">
            {showSidebar && (
             <>
-              <Sidebar isCollapsed={isSidebarCollapsed} user={currentUser} onToggleSidebar={handleToggleSidebar} />
-              {/* Overlay for mobile when sidebar is open */}
-              {!isMobile && !isSidebarCollapsed && (
+              {/* Overlay for all screens when sidebar is open */}
+              {isSidebarOpen && (
                  <div
-                    className="fixed inset-0 z-30 bg-black/50 md:hidden"
+                    className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
                     onClick={handleToggleSidebar}
                     aria-hidden="true"
                 />
               )}
+              {/* Sidebar panel */}
+              <Sidebar 
+                isOpen={isSidebarOpen} 
+                user={currentUser} 
+                onClose={handleToggleSidebar}
+              />
             </>
           )}
           
           <div className={cn(
-            "flex flex-col flex-1 overflow-hidden transition-all duration-300 ease-in-out",
-            showSidebar && !isMobile ? 'md:pl-16' : ''
+            "flex flex-col flex-1 overflow-hidden transition-all duration-300 ease-in-out"
           )}>
             <Navbar 
               user={currentUser}
