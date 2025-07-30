@@ -65,7 +65,7 @@ async function ExpertDetailContent({ expertId }: { expertId: string }) {
     }
 
     return (
-        <div className="container mx-auto py-12 px-4 max-w-5xl">
+        <div id="contacto" className="container mx-auto py-12 px-4 max-w-5xl">
             <header className="flex flex-col md:flex-row items-center gap-8 mb-10 text-center md:text-left">
                 <Image
                     src={expert.photo || 'https://placehold.co/256x256.png'}
@@ -92,7 +92,7 @@ async function ExpertDetailContent({ expertId }: { expertId: string }) {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
                 {/* Left Column for Contact & AI */}
-                <div id="contacto" className="lg:col-span-1 space-y-6 scroll-mt-24">
+                <div  className="lg:col-span-1 space-y-6 scroll-mt-24">
                      <Card>
                         <CardHeader>
                             <CardTitle className="text-lg">Información de Contacto</CardTitle>

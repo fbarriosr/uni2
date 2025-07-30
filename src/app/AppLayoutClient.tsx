@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, ReactNode, useEffect } from 'react';
+import { useState, ReactNode, useEffect, useRef } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { getUserById, getAgents } from '@/lib/data';
@@ -39,6 +39,16 @@ export default function AppLayoutClient({
   const [agents, setAgents] = useState<Agent[]>([]);
   const [activeAgent, setActiveAgent] = useState<Agent | null>(null);
   const [loadingAgents, setLoadingAgents] = useState(true);
+  
+  const mainScrollRef = useRef<HTMLElement>(null);
+
+  // --- START: Scroll to top on route change ---
+  useEffect(() => {
+    if (mainScrollRef.current) {
+      mainScrollRef.current.scrollTop = 0;
+    }
+  }, [pathname]);
+  // --- END: Scroll to top on route change ---
 
   // Fetch user data
   useEffect(() => {
@@ -146,7 +156,9 @@ export default function AppLayoutClient({
               isSidebarVisible={showSidebar}
               onToggleChatbar={handleToggleChatbar}
             />
-            <main className={cn(
+            <main 
+                ref={mainScrollRef}
+                className={cn(
                 "flex-1 overflow-y-auto overflow-x-hidden",
                  "pt-[var(--header-height)]"
                  )}>
