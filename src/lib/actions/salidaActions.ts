@@ -492,6 +492,7 @@ export async function manageShareLinkAction(salidaId: string, userId: string): P
   try {
     const user = await getUserById(userId);
     if (!user) return { success: false, message: 'Usuario no encontrado.' };
+    
     const familyHeadUid = user.role === 'hijo' && user.parentUid ? user.parentUid : userId;
     if (user.role === 'hijo' && user.id !== familyHeadUid) {
       return { success: false, message: 'Solo el organizador puede compartir la salida.' };
@@ -499,30 +500,32 @@ export async function manageShareLinkAction(salidaId: string, userId: string): P
 
     const salidaRef = doc(db, 'users', familyHeadUid, 'salidas', salidaId);
     const salidaSnap = await getDoc(salidaRef);
+
     if (!salidaSnap.exists()) {
       return { success: false, message: 'Salida no encontrada.' };
     }
 
     let token = salidaSnap.data().shareToken;
+    let isCurrentlyPublic = salidaSnap.data().isPublic;
+
     if (!token) {
+      // If the token doesn't exist, generate it and set isPublic to true.
       token = uuidv4();
       await updateDoc(salidaRef, { shareToken: token, isPublic: true });
-    } else {
-       // Optionally toggle isPublic if needed, or just ensure it's on
-       if(!salidaSnap.data().isPublic) {
-         await updateDoc(salidaRef, { isPublic: true });
-       }
+    } else if (!isCurrentlyPublic) {
+      // If the token exists but the outing is not public, just make it public.
+      await updateDoc(salidaRef, { isPublic: true });
     }
     
-    revalidatePath(AppRoutes.salidas.itinerario(salidaId));
+    revalidatePath(AppRoutes.salidas.itinerario(salidaId)); // Revalidate the page
     
+    // Construct the URL using the (potentially new) token
     const url = new URL(AppRoutes.salidas.public(token), process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000').toString();
-    return { success: true, url, message: 'Enlace generado.' };
+    return { success: true, url: url, message: 'Enlace generado.' };
 
   } catch (error) {
-    console.error("Error creating share link:", error);
+    console.error("Error creating/managing share link:", error);
     return { success: false, message: "Error del servidor al crear el enlace para compartir." };
   }
 }
-
     
