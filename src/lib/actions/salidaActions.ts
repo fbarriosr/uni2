@@ -298,6 +298,7 @@ export async function getSalidaById(salidaId: string, userId: string) {
             const data = salidaSnap.data();
             return {
                 id: salidaSnap.id,
+                participantIds: data.participantIds || [],
                 dateRange: {
                     from: (data.dateRange.from).toDate(),
                     to: data.dateRange.to ? (data.dateRange.to).toDate() : null,
@@ -534,7 +535,7 @@ export async function manageShareLinkAction(
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     if (!baseUrl) {
       console.error("NEXT_PUBLIC_BASE_URL is not set.");
-      throw new Error("Missing server configuration for base URL.");
+      return { success: false, message: "Error de configuración del servidor: falta la URL base." };
     }
     
     const url = new URL(AppRoutes.salidas.public(token), baseUrl).toString();
@@ -545,4 +546,3 @@ export async function manageShareLinkAction(
     return { success: false, message: "Error del servidor al crear el enlace para compartir." };
   }
 }
-    

@@ -649,4 +649,29 @@ export async function getLegalExpertById(id: string): Promise<Expert | undefined
   }
 }
 
-    
+// --- Public Sharing ---
+
+export async function getSalidaByToken(token: string): Promise<{ salida: any | null, ownerId: string | null }> {
+  if (!token) return { salida: null, ownerId: null };
+
+  try {
+    const q = query(collection(db, 'users'));
+    const usersSnapshot = await getDocs(q);
+
+    for (const userDoc of usersSnapshot.docs) {
+      const salidasRef = collection(db, `users/${userDoc.id}/salidas`);
+      const salidasQuery = query(salidasRef, where('shareToken', '==', token), where('isPublic', '==', true));
+      const salidasSnapshot = await getDocs(salidasQuery);
+
+      if (!salidasSnapshot.empty) {
+        const salidaDoc = salidasSnapshot.docs[0];
+        return { salida: serializeData(salidaDoc), ownerId: userDoc.id };
+      }
+    }
+
+    return { salida: null, ownerId: null };
+  } catch (error) {
+    console.error("Error fetching salida by token:", error);
+    return { salida: null, ownerId: null };
+  }
+}
