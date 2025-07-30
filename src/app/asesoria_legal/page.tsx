@@ -72,6 +72,26 @@ const laws = [
     }
 ];
 
+// --- Data for Articles ---
+const articles = [
+  {
+    icon: Gavel,
+    title: "Derechos y deberes del padre separado",
+    description: "Profundiza en la Ley N° 20.680 (“Ley Amor de Papá”), explicando cómo reconoce el derecho a ambos padres a solicitar y ejercitar el cuidado personal de los hijos, impulsando la corresponsabilidad parental. Detalla derechos como mantener una relación directa y regular, participar en decisiones clave, y deberes como la pensión de alimentos y el respeto a los regímenes acordados.",
+  },
+  {
+    icon: BookOpen,
+    title: "Patria potestad en Chile – derechos y obligaciones",
+    description: "Explica en detalle la figura de la patria potestad: conjunto de derechos y deberes que los padres tienen sobre sus hijos no emancipados, incluyendo su representación legal, cuidado, educación, y administración de bienes. Aborda cómo se ejerce cuando los padres están separados y las posibilidades de modificación judicial.",
+  },
+  {
+    icon: LandmarkIcon,
+    title: "Deber y derecho preferente de educar",
+    description: "Describe el derecho y deber de los padres de educar a sus hijos, consagrado en el Código Civil, la Constitución y la Ley General de Educación. Establece que este derecho preferente puede perderse en casos de abandono o incapacidad, e implica la elección libre del establecimiento y la participación activa en la vida escolar del menor.",
+  },
+];
+
+
 // --- Reusable Components for this Page ---
 
 const SectionCard = ({ title, icon: Icon, children }: { title: string, icon: React.ElementType, children: React.ReactNode }) => (
@@ -84,6 +104,25 @@ const SectionCard = ({ title, icon: Icon, children }: { title: string, icon: Rea
         </CardHeader>
         <CardContent>{children}</CardContent>
     </Card>
+);
+
+const ArticleCard = ({ article }: { article: typeof articles[0] }) => (
+  <Card className="h-full flex flex-col">
+    <CardHeader>
+      <div className="flex items-center gap-3 text-primary">
+        <article.icon className="h-5 w-5" />
+        <CardTitle className="text-xl font-semibold text-foreground">{article.title}</CardTitle>
+      </div>
+    </CardHeader>
+    <CardContent className="flex-grow">
+      <p className="text-sm text-muted-foreground">{article.description}</p>
+    </CardContent>
+    <CardFooter>
+      <Button variant="outline" className="w-full mt-auto">
+        Leer más <ArrowRight className="ml-2 h-4 w-4" />
+      </Button>
+    </CardFooter>
+  </Card>
 );
 
 
@@ -155,14 +194,8 @@ const LegalExpertCard = ({ expert }: { expert: Expert }) => (
     </Link>
 );
 
-const PlaceholderCard = () => (
-    <Card className="h-40 flex items-center justify-center bg-muted/50 border-dashed">
-        <p className="text-muted-foreground">Contenido Próximamente</p>
-    </Card>
-);
 
 async function AcademiaLegalContent() {
-    // In a real scenario, you would fetch data for articles, laws, and experts here.
     const legalExperts = await getLegalExperts();
 
     return (
@@ -185,9 +218,9 @@ async function AcademiaLegalContent() {
             <div className="container mx-auto py-8 space-y-12">
                 <SectionCard title="Artículos" icon={FileText}>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <PlaceholderCard />
-                        <PlaceholderCard />
-                        <PlaceholderCard />
+                       {articles.map((article, index) => (
+                           <ArticleCard key={index} article={article} />
+                       ))}
                     </div>
                 </SectionCard>
 
