@@ -22,7 +22,7 @@ function SalidaDetailLoading() {
 
 // This is now a Server Component
 export default async function SalidaDetailPage({ params }: SalidaDetailPageProps) {
-  const { id: salidaId } = params;
+  const { id: salidaId } = await params;
 
   if (!salidaId) {
     notFound();
