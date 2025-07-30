@@ -21,8 +21,8 @@ import { Separator } from '@/components/ui/separator';
 const SectionCard = ({ title, icon: Icon, children, href }: { title: string, icon: React.ElementType, children: React.ReactNode, href?: string }) => (
     <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
         <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl font-headline text-primary flex items-center gap-3">
-                <Icon className="h-7 w-7" />
+            <CardTitle className="text-xl md:text-2xl font-headline text-primary flex items-center gap-3">
+                <Icon className="h-6 w-6 md:h-7 md:w-7" />
                 {title}
             </CardTitle>
             {href && (
@@ -48,7 +48,7 @@ const MicroLessonCard = ({ lesson }: { lesson: any }) => (
 const ExpertCard = ({ expert }: { expert: any }) => (
     <Link
   href={AppRoutes.vinculoExpertDetail(expert.id)}
-  className="block group w-full max-w-sm mx-auto h-full"
+  className="block group w-full h-full"
 >
   <Card
     className="w-full h-full p-4 text-center flex flex-col justify-between hover:shadow-xl hover:border-primary/50 transition-all duration-300 ease-in-out transform hover:-translate-y-1"
@@ -84,9 +84,9 @@ const ExpertCard = ({ expert }: { expert: any }) => (
 const DetailedReadingCard = ({ reading }: { reading: { emoji: string, title: string, description: string, link: string, whyRead: string[] } }) => (
   <Card className="flex flex-col h-full">
     <CardHeader>
-      <CardTitle className="text-xl font-headline text-foreground">
-        <span className="mr-3">{reading.emoji}</span>
-        {reading.title}
+      <CardTitle className="text-lg md:text-xl font-headline text-foreground flex items-start gap-3">
+        <span className="text-2xl mt-1">{reading.emoji}</span>
+        <span>{reading.title}</span>
       </CardTitle>
     </CardHeader>
     <CardContent className="flex-grow space-y-4">
@@ -97,7 +97,7 @@ const DetailedReadingCard = ({ reading }: { reading: { emoji: string, title: str
             <Lightbulb size={16}/>
             ¿Por qué leerlo?
         </h4>
-        <ul className="space-y-1 text-sm text-muted-foreground list-disc list-inside">
+        <ul className="space-y-1.5 text-sm text-muted-foreground list-disc list-inside">
             {reading.whyRead.map((point, i) => (
                 <li key={i}>{point}</li>
             ))}
@@ -118,9 +118,9 @@ const DetailedReadingCard = ({ reading }: { reading: { emoji: string, title: str
 const DetailedArticleCard = ({ article }: { article: { emoji: string, title: string, description: string, link: string, relevance: string[], expertComment: string } }) => (
     <Card className="flex flex-col h-full">
         <CardHeader>
-            <CardTitle className="text-xl font-headline text-foreground">
-                <span className="mr-3">{article.emoji}</span>
-                {article.title}
+            <CardTitle className="text-lg md:text-xl font-headline text-foreground flex items-start gap-3">
+                <span className="text-2xl mt-1">{article.emoji}</span>
+                <span>{article.title}</span>
             </CardTitle>
         </CardHeader>
         <CardContent className="flex-grow space-y-4">
@@ -131,13 +131,13 @@ const DetailedArticleCard = ({ article }: { article: { emoji: string, title: str
                     <BrainCircuit size={16}/>
                     ¿Por qué es relevante?
                 </h4>
-                <ul className="space-y-1 text-sm text-muted-foreground list-disc list-inside">
+                <ul className="space-y-1.5 text-sm text-muted-foreground list-disc list-inside">
                     {article.relevance.map((point, i) => (
                         <li key={i}>{point}</li>
                     ))}
                 </ul>
             </div>
-             <blockquote className="mt-6 border-l-2 pl-6 italic text-sm text-muted-foreground">
+             <blockquote className="mt-6 border-l-2 pl-4 italic text-sm text-muted-foreground">
                 {article.expertComment}
             </blockquote>
         </CardContent>
@@ -276,7 +276,7 @@ async function AcademiaVinculoContent() {
                 </SectionCard>
 
                 <SectionCard title="Red de Expertos Uni2" icon={Star}>
-                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {experts.map(expert => <ExpertCard key={expert.id} expert={expert} />)}
                      </div>
                 </SectionCard>
