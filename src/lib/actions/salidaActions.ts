@@ -501,13 +501,14 @@ export async function manageShareLinkAction(
   if (!userId || !salidaId) {
     return { success: false, message: "Faltan datos para compartir." };
   }
+  
   try {
     const user = await getUserById(userId);
     if (!user) {
       return { success: false, message: 'Usuario no encontrado.' };
     }
 
-    const familyHeadUid = user.role === 'hijo' && user.parentUid ? user.parentUid : userId;
+    const familyHeadUid = user.parentUid || userId;
     
     if (!familyHeadUid) {
       return { success: false, message: 'No se pudo determinar el grupo familiar.' };
