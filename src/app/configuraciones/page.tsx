@@ -194,13 +194,15 @@ export default function ConfiguracionesPage() {
                   {isTransitioning && <div className="absolute inset-0 bg-background/50 flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}
                   {currentUser.addresses && currentUser.addresses.length > 0 ? (
                     currentUser.addresses.map(addr => (
-                      <div key={addr.id} className={cn("flex items-center gap-4 p-4 rounded-lg border", currentUser.activeAddressId === addr.id ? "bg-primary/10 border-primary" : "bg-card")}>
-                        <Home className={cn("h-6 w-6 shrink-0", currentUser.activeAddressId === addr.id ? "text-primary" : "text-muted-foreground")}/>
-                        <div className="flex-grow">
-                          <p className="font-semibold text-foreground">{addr.name}</p>
-                          <p className="text-sm text-muted-foreground">{addr.address}</p>
+                      <div key={addr.id} className={cn("flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-lg border", currentUser.activeAddressId === addr.id ? "bg-primary/10 border-primary" : "bg-card")}>
+                        <div className="flex items-center flex-grow">
+                          <Home className={cn("h-6 w-6 shrink-0 mr-4", currentUser.activeAddressId === addr.id ? "text-primary" : "text-muted-foreground")}/>
+                          <div>
+                            <p className="font-semibold text-foreground">{addr.name}</p>
+                            <p className="text-sm text-muted-foreground">{addr.address}</p>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center justify-end flex-wrap gap-1 w-full sm:w-auto">
                           {currentUser.activeAddressId === addr.id ? (
                             <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200 pointer-events-none">
                               <CheckCircle className="mr-1.5 h-4 w-4"/>
