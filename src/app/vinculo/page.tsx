@@ -3,12 +3,11 @@ import AuthCheck from '@/components/AuthCheck';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, Trophy, FileText, Star, BookMarked, ShieldQuestion, ArrowRight, GraduationCap, Lightbulb, Link as LinkIcon, BrainCircuit } from 'lucide-react';
+import { BookOpen, FileText, Star, BookMarked, ShieldQuestion, ArrowRight, Lightbulb, Link as LinkIcon, BrainCircuit } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
     getActiveMicroLessons,
-    getActiveChallenges,
     getActiveArticles,
     getExperts,
 } from '@/lib/data';
@@ -43,14 +42,6 @@ const MicroLessonCard = ({ lesson }: { lesson: any }) => (
             <h3 className="font-semibold text-md truncate">{lesson.title}</h3>
             <p className="text-xs text-muted-foreground truncate">{lesson.description}</p>
         </div>
-    </Card>
-);
-
-const ChallengeCard = ({ challenge }: { challenge: any }) => (
-    <Card className="relative overflow-hidden group h-40 flex items-end p-4">
-        <Image src={challenge.image} alt={challenge.title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <h3 className="relative z-10 font-bold text-lg text-white">{challenge.title}</h3>
     </Card>
 );
 
@@ -165,16 +156,11 @@ const DetailedArticleCard = ({ article }: { article: { emoji: string, title: str
 async function AcademiaVinculoContent() {
     const [
         microLessons,
-        challenges,
         experts,
     ] = await Promise.all([
         getActiveMicroLessons(),
-        getActiveChallenges(),
         getExperts(),
     ]);
-
-    const weeklyChallenges = challenges.filter(c => c.period === 'weekly');
-    const monthlyChallenges = challenges.filter(c => c.period === 'monthly');
 
     const suggestedReadingsData = [
         {
@@ -289,23 +275,6 @@ async function AcademiaVinculoContent() {
                     </div>
                 </SectionCard>
 
-                <SectionCard title="Desafíos" icon={Trophy}>
-                     <div className="space-y-6">
-                        <div>
-                            <h3 className="font-semibold mb-3">Semanales</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {weeklyChallenges.map(challenge => <ChallengeCard key={challenge.id} challenge={challenge} />)}
-                            </div>
-                        </div>
-                        <div>
-                            <h3 className="font-semibold mb-3">Mensuales</h3>
-                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {monthlyChallenges.map(challenge => <ChallengeCard key={challenge.id} challenge={challenge} />)}
-                            </div>
-                        </div>
-                     </div>
-                </SectionCard>
-
                 <SectionCard title="Red de Expertos Uni2" icon={Star}>
                      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {experts.map(expert => <ExpertCard key={expert.id} expert={expert} />)}
@@ -339,5 +308,3 @@ export default function VinculoPage() {
         </AuthCheck>
     );
 }
-
-    
