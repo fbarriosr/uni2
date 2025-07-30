@@ -49,7 +49,7 @@ export default function LandingPage() {
                   }}
                 >
                   {/* Overlay for text readability */}
-
+                  <div className="absolute inset-0 bg-black/60"></div>
                   {/* Content */}
                   <div className="relative z-10 text-white px-4 max-w-4xl mx-auto">
                     <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
@@ -142,7 +142,7 @@ export default function LandingPage() {
               <div className="flex items-center justify-center w-12 h-12 rounded-full bg-yellow-500 text-white text-2xl font-bold mb-4">3</div>
               <h3 className="text-xl font-bold">Conectan</h3>
               <p className="text-gray-500 dark:text-gray-400">
-                Con un plan que los encanta a los dos, cada fin de semana se convierte en una aventura memorable y un lazo más fuerte.
+                Con un plan que les encanta a los dos, cada fin de semana se convierte en una aventura memorable y un lazo más fuerte.
               </p>
             </Card>
           </div>
