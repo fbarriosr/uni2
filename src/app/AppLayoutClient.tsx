@@ -26,7 +26,7 @@ export default function AppLayoutClient({
   children: ReactNode;
 }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
-  const [isChatbarCollapsed, setIsChatbarCollapsed] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [activeAddress, setActiveAddress] = useState<Address | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -105,7 +105,7 @@ export default function AppLayoutClient({
   };
   
   const handleToggleChatbar = () => {
-    setIsChatbarCollapsed(!isChatbarCollapsed);
+    setIsChatOpen(!isChatOpen);
   };
 
   const showSidebar = !!currentUser;
@@ -117,7 +117,7 @@ export default function AppLayoutClient({
         <div className="flex h-screen bg-background">
            {showSidebar && (
             <>
-              <Sidebar isCollapsed={isSidebarCollapsed} user={currentUser} />
+              <Sidebar isCollapsed={isSidebarCollapsed} user={currentUser} onToggleSidebar={handleToggleSidebar} />
               {/* Overlay for mobile when sidebar is open */}
               {!isSidebarCollapsed && (
                 <div 
@@ -137,10 +137,6 @@ export default function AppLayoutClient({
               onToggleSidebar={handleToggleSidebar}
               isSidebarVisible={showSidebar}
               onToggleChatbar={handleToggleChatbar}
-              agents={agents}
-              activeAgent={activeAgent}
-              setActiveAgent={setActiveAgent}
-              isLoadingAgents={loadingAgents}
             />
             <main className={cn(
                 "flex-1 overflow-y-auto overflow-x-hidden",
@@ -159,15 +155,33 @@ export default function AppLayoutClient({
             </main>
           </div>
           
-          {showChatbar && (
-             <aside className={cn(
-              "hidden lg:flex flex-col flex-shrink-0 bg-card/50 transition-all duration-300 ease-in-out border-l pt-[var(--header-height)]",
-              isChatbarCollapsed ? "w-0 p-0 border-transparent" : "w-[380px]"
-            )}>
-              <LemonDropChat 
-                activeAgent={activeAgent} 
-              />
-            </aside>
+           {/* Chatbar */}
+           {showChatbar && (
+            <>
+              {/* Overlay for mobile chat */}
+              {isChatOpen && (
+                <div
+                  className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+                  onClick={handleToggleChatbar}
+                  aria-hidden="true"
+                />
+              )}
+              {/* Chat panel */}
+              <aside
+                className={cn(
+                  'fixed top-0 right-0 h-full w-full max-w-md z-50 flex flex-col bg-card transition-transform duration-300 ease-in-out',
+                  isChatOpen ? 'translate-x-0' : 'translate-x-full'
+                )}
+              >
+                <LemonDropChat 
+                    activeAgent={activeAgent} 
+                    agents={agents}
+                    setActiveAgent={setActiveAgent}
+                    isLoading={loadingAgents}
+                    onClose={handleToggleChatbar}
+                />
+              </aside>
+            </>
           )}
 
         </div>

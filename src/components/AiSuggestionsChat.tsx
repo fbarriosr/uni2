@@ -30,14 +30,14 @@ interface Message {
   avatarUrl?: string;
   avatarHint?: string;
   userFallbackName?: string;
-  quickReplies?: string[];
+  quickReplies: string[];
 }
 
 interface AiSuggestionsChatProps {
   activeAgent: Agent | null;
   agents: Agent[];
   setActiveAgent: (agent: Agent) => void;
-  isLoading: boolean;
+  isLoadingAgents: boolean;
 }
 
 // Custom animation for wave emoji
@@ -64,7 +64,7 @@ const AnimateWave = () => (
 );
 
 
-export default function AiSuggestionsChat({ activeAgent, agents, setActiveAgent, isLoading: isLoadingAgents }: AiSuggestionsChatProps) {
+export default function AiSuggestionsChat({ activeAgent, agents, setActiveAgent, isLoadingAgents }: AiSuggestionsChatProps) {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -372,7 +372,7 @@ export default function AiSuggestionsChat({ activeAgent, agents, setActiveAgent,
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[350px] p-0 z-50 mb-1">
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0 z-50 mb-1">
                    <Command>
                       <CommandList>
                           <CommandGroup>

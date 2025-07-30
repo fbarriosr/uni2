@@ -3,9 +3,10 @@
 
 import dynamic from 'next/dynamic';
 import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import type { Agent } from '@/lib/types';
 import { Skeleton } from './ui/skeleton';
+import { Button } from './ui/button';
 
 const AiSuggestionsChat = dynamic(
   () => import('@/components/AiSuggestionsChat'),
@@ -43,12 +44,21 @@ interface LemonDropChatProps {
   agents: Agent[];
   setActiveAgent: (agent: Agent) => void;
   isLoading: boolean;
+  onClose: () => void;
 }
 
-export default function LemonDropChat({ activeAgent, agents, setActiveAgent, isLoading }: LemonDropChatProps) {
+export default function LemonDropChat({ activeAgent, agents, setActiveAgent, isLoading, onClose }: LemonDropChatProps) {
 
   return (
     <div className={cn("flex flex-col h-full bg-card text-foreground overflow-hidden")}>
+       {/* Custom Header for Chat */}
+       <header className="flex items-center justify-between p-3 border-b h-[var(--header-height)]">
+          <h2 className="text-lg font-bold">Asistente IA</h2>
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="h-5 w-5" />
+            <span className="sr-only">Cerrar chat</span>
+          </Button>
+       </header>
        <div className="flex-grow min-h-0">
          {isLoading ? (
            <div className="flex items-center justify-center h-full">
