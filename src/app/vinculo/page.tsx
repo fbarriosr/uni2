@@ -3,7 +3,7 @@ import AuthCheck from '@/components/AuthCheck';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, Trophy, FileText, Star, BookMarked, ShieldQuestion, ArrowRight, GraduationCap, Lightbulb, Link as LinkIcon } from 'lucide-react';
+import { BookOpen, Trophy, FileText, Star, BookMarked, ShieldQuestion, ArrowRight, GraduationCap, Lightbulb, Link as LinkIcon, BrainCircuit } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -51,14 +51,6 @@ const ChallengeCard = ({ challenge }: { challenge: any }) => (
         <Image src={challenge.image} alt={challenge.title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         <h3 className="relative z-10 font-bold text-lg text-white">{challenge.title}</h3>
-    </Card>
-);
-
-const ArticleCard = ({ article }: { article: any }) => (
-     <Card className="relative overflow-hidden group h-48 flex items-end p-4">
-        <Image src={article.coverImage} alt={article.title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <h3 className="relative z-10 font-bold text-lg text-white">{article.title}</h3>
     </Card>
 );
 
@@ -132,17 +124,52 @@ const DetailedReadingCard = ({ reading }: { reading: { emoji: string, title: str
   </Card>
 );
 
+const DetailedArticleCard = ({ article }: { article: { emoji: string, title: string, description: string, link: string, relevance: string[], expertComment: string } }) => (
+    <Card className="flex flex-col h-full">
+        <CardHeader>
+            <CardTitle className="text-xl font-headline text-foreground">
+                <span className="mr-3">{article.emoji}</span>
+                {article.title}
+            </CardTitle>
+        </CardHeader>
+        <CardContent className="flex-grow space-y-4">
+            <p className="text-sm text-muted-foreground">{article.description}</p>
+            
+            <div className="p-4 bg-primary/5 rounded-lg border-l-4 border-primary/50">
+                <h4 className="font-semibold text-sm text-primary mb-2 flex items-center gap-2">
+                    <BrainCircuit size={16}/>
+                    ¿Por qué es relevante?
+                </h4>
+                <ul className="space-y-1 text-sm text-muted-foreground list-disc list-inside">
+                    {article.relevance.map((point, i) => (
+                        <li key={i}>{point}</li>
+                    ))}
+                </ul>
+            </div>
+             <blockquote className="mt-6 border-l-2 pl-6 italic text-sm text-muted-foreground">
+                {article.expertComment}
+            </blockquote>
+        </CardContent>
+        <CardFooter>
+            <Button asChild className="w-full">
+                <a href={article.link} target="_blank" rel="noopener noreferrer">
+                    <LinkIcon className="mr-2 h-4 w-4"/>
+                    Leer Artículo
+                </a>
+            </Button>
+        </CardFooter>
+    </Card>
+);
+
 
 async function AcademiaVinculoContent() {
     const [
         microLessons,
         challenges,
-        articles,
         experts,
     ] = await Promise.all([
         getActiveMicroLessons(),
         getActiveChallenges(),
-        getActiveArticles(),
         getExperts(),
     ]);
 
@@ -184,6 +211,45 @@ async function AcademiaVinculoContent() {
             ]
         }
     ];
+    
+    const detailedArticlesData = [
+      {
+        emoji: '🧠',
+        title: 'Cómo acompañar emocionalmente a los hijos tras la separación',
+        description: 'Este artículo profundiza en las reacciones emocionales típicas de los niños frente a la separación y ofrece herramientas para acompañarlos desde la empatía, la contención y la validación emocional.',
+        link: 'https://psicologosybienestar.cl/impacto-psicologico-y-emocional-de-la-separacion-de-los-padres-en-ninos/',
+        relevance: [
+          'Explica el proceso de duelo infantil.',
+          'Advierte sobre señales de angustia, culpa o retraimiento.',
+          'Recomienda estrategias de regulación emocional y rutinas estables.',
+        ],
+        expertComment: 'Desde la psicología familiar, este artículo es fundamental para padres que quieren evitar el sufrimiento silencioso de sus hijos y transformar la separación en una experiencia de resiliencia y apego seguro.',
+      },
+      {
+        emoji: '👨‍⚕️',
+        title: 'La importancia del rol paterno tras la ruptura conyugal',
+        description: 'Aunque redactado por un estudio jurídico, este artículo recoge recomendaciones con sustento psicoeducativo para reforzar el vínculo padre-hijo después de una separación, respetando los tiempos emocionales del niño.',
+        link: 'https://www.aguilaycia.cl/post/derechos-del-padre-en-la-relaci%C3%B3n-directa-y-regular',
+        relevance: [
+          'El rol del padre como figura de seguridad emocional.',
+          'La importancia de la relación directa y regular no solo como derecho, sino como necesidad afectiva del menor.',
+          'La coordinación con la madre como factor protector para la salud mental del niño.',
+        ],
+        expertComment: 'Desde la mirada psicológica, el artículo refuerza el mensaje clave: el padre separado no es “padre visitante”, sino una figura emocionalmente activa y significativa.',
+      },
+      {
+        emoji: '🧩',
+        title: 'Cuidado compartido y bienestar emocional infantil',
+        description: 'Artículo académico que recoge experiencias de padres que ejercen cuidado compartido en Chile. Analiza cómo este modelo no solo promueve la equidad parental, sino también una mejor adaptación emocional de los hijos.',
+        link: 'https://tscuadernosdetrabajosocial.cl/index.php/TS/issue/download/numero-28/dinamica-cuidado-chile',
+        relevance: [
+          'Testimonios reales desde el punto de vista paterno.',
+          'Impacto en la autoestima, regulación emocional y estabilidad de los niños.',
+          'Factores protectores: comunicación respetuosa entre padres, coherencia de normas y continuidad afectiva.',
+        ],
+        expertComment: 'Este texto es ideal para padres que desean reflexionar sobre la estructura emocional que brinda la corresponsabilidad real, más allá de los acuerdos legales.',
+      },
+    ];
 
     return (
         <div className="space-y-12">
@@ -208,6 +274,14 @@ async function AcademiaVinculoContent() {
                         {suggestedReadingsData.map((reading, index) => <DetailedReadingCard key={index} reading={reading} />)}
                     </div>
                 </SectionCard>
+                
+                 <SectionCard title="Artículos y Recursos" icon={FileText}>
+                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {detailedArticlesData.map((article, index) => (
+                           <DetailedArticleCard key={index} article={article} />
+                        ))}
+                    </div>
+                </SectionCard>
 
                 <SectionCard title="Micro-Lecciones" icon={BookOpen}>
                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -230,12 +304,6 @@ async function AcademiaVinculoContent() {
                             </div>
                         </div>
                      </div>
-                </SectionCard>
-
-                <SectionCard title="Artículos y Recursos" icon={FileText}>
-                     <div className="grid md:grid-cols-2 gap-6">
-                        {articles.map(article => <ArticleCard key={article.id} article={article} />)}
-                    </div>
                 </SectionCard>
 
                 <SectionCard title="Red de Expertos Uni2" icon={Star}>
@@ -271,3 +339,5 @@ export default function VinculoPage() {
         </AuthCheck>
     );
 }
+
+    
