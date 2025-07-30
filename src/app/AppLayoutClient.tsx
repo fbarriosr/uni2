@@ -18,6 +18,7 @@ import LemonDropChat from '@/components/LemonDropChat';
 import { usePathname } from 'next/navigation';
 import { AppRoutes } from '@/lib/urls';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 
 export default function AppLayoutClient({
@@ -25,7 +26,8 @@ export default function AppLayoutClient({
 }: {
   children: ReactNode;
 }) {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
+  const isMobile = useIsMobile();
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(isMobile ?? true);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [activeAddress, setActiveAddress] = useState<Address | null>(null);
@@ -37,7 +39,12 @@ export default function AppLayoutClient({
   const [agents, setAgents] = useState<Agent[]>([]);
   const [activeAgent, setActiveAgent] = useState<Agent | null>(null);
   const [loadingAgents, setLoadingAgents] = useState(true);
-
+  
+    useEffect(() => {
+        if (isMobile !== null) {
+            setIsSidebarCollapsed(isMobile);
+        }
+    }, [isMobile]);
 
   // Fetch user data
   useEffect(() => {
@@ -97,7 +104,7 @@ export default function AppLayoutClient({
     }
     fetchAndSetAgents();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toast, currentUser]); // Rerun when user logs in/out
+  }, [toast, currentUser]);
 
 
   const handleToggleSidebar = () => {
@@ -119,17 +126,20 @@ export default function AppLayoutClient({
             <>
               <Sidebar isCollapsed={isSidebarCollapsed} user={currentUser} onToggleSidebar={handleToggleSidebar} />
               {/* Overlay for mobile when sidebar is open */}
-              {!isSidebarCollapsed && (
-                <div 
-                  className="fixed inset-0 z-30 bg-black/50 md:hidden"
-                  onClick={handleToggleSidebar}
-                  aria-hidden="true"
+              {!isMobile && !isSidebarCollapsed && (
+                 <div
+                    className="fixed inset-0 z-30 bg-black/50 md:hidden"
+                    onClick={handleToggleSidebar}
+                    aria-hidden="true"
                 />
               )}
             </>
           )}
           
-          <div className="flex flex-col flex-1 overflow-hidden">
+          <div className={cn(
+            "flex flex-col flex-1 overflow-hidden transition-all duration-300 ease-in-out",
+            showSidebar && !isMobile ? 'md:pl-16' : ''
+          )}>
             <Navbar 
               user={currentUser}
               activeAddress={activeAddress}
@@ -158,7 +168,7 @@ export default function AppLayoutClient({
            {/* Chatbar */}
            {showChatbar && (
             <>
-              {/* Overlay for mobile chat */}
+              {/* Overlay for all screens when chat is open */}
               {isChatOpen && (
                 <div
                   className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
