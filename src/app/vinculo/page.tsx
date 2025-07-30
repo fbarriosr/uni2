@@ -1,22 +1,21 @@
 
 import AuthCheck from '@/components/AuthCheck';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, Trophy, FileText, Star, BookMarked, ShieldQuestion, ArrowRight, GraduationCap } from 'lucide-react';
+import { BookOpen, Trophy, FileText, Star, BookMarked, ShieldQuestion, ArrowRight, GraduationCap, Lightbulb, Link as LinkIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-    getActiveLearningPaths,
     getActiveMicroLessons,
     getActiveChallenges,
     getActiveArticles,
     getExperts,
-    getActiveSuggestedReadings,
 } from '@/lib/data';
 import { Suspense } from 'react';
 import { AppRoutes } from '@/lib/urls';
 import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
 
 // --- Reusable Components for this Page ---
 
@@ -34,19 +33,6 @@ const SectionCard = ({ title, icon: Icon, children, href }: { title: string, ico
             )}
         </CardHeader>
         <CardContent>{children}</CardContent>
-    </Card>
-);
-
-const LearningPathCard = ({ path }: { path: any }) => (
-    <Card className="overflow-hidden group">
-        <Image src={path.coverImage} alt={path.title} width={400} height={200} className="w-full h-32 object-cover" />
-        <CardContent className="p-4">
-            <h3 className="font-semibold text-lg mb-2">{path.title}</h3>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Progress value={25} className="w-full h-2" />
-                <span>25%</span>
-            </div>
-        </CardContent>
     </Card>
 );
 
@@ -111,37 +97,93 @@ const ExpertCard = ({ expert }: { expert: any }) => (
 
 );
 
-
-const ReadingCard = ({ reading }: { reading: any }) => (
-     <Card className="overflow-hidden group">
-        <Image src={reading.coverImage} alt={reading.title} width={200} height={300} className="w-full h-48 object-cover" />
-        <div className="p-3">
-            <h3 className="font-semibold text-md truncate">{reading.title}</h3>
-            <p className="text-xs text-muted-foreground truncate">{reading.subtitle}</p>
-        </div>
-    </Card>
+// --- New Suggested Reading Card Component ---
+const DetailedReadingCard = ({ reading }: { reading: { emoji: string, title: string, description: string, link: string, whyRead: string[] } }) => (
+  <Card className="flex flex-col h-full">
+    <CardHeader>
+      <CardTitle className="text-xl font-headline text-foreground">
+        <span className="mr-3">{reading.emoji}</span>
+        {reading.title}
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="flex-grow space-y-4">
+      <p className="text-sm text-muted-foreground">{reading.description}</p>
+      
+      <div className="p-4 bg-primary/5 rounded-lg border-l-4 border-primary/50">
+        <h4 className="font-semibold text-sm text-primary mb-2 flex items-center gap-2">
+            <Lightbulb size={16}/>
+            ¿Por qué leerlo?
+        </h4>
+        <ul className="space-y-1 text-sm text-muted-foreground list-disc list-inside">
+            {reading.whyRead.map((point, i) => (
+                <li key={i}>{point}</li>
+            ))}
+        </ul>
+      </div>
+    </CardContent>
+    <CardFooter>
+        <Button asChild className="w-full">
+            <a href={reading.link} target="_blank" rel="noopener noreferrer">
+                <LinkIcon className="mr-2 h-4 w-4"/>
+                Ver Recurso
+            </a>
+        </Button>
+    </CardFooter>
+  </Card>
 );
 
 
 async function AcademiaVinculoContent() {
     const [
-        learningPaths,
         microLessons,
         challenges,
         articles,
         experts,
-        suggestedReadings,
     ] = await Promise.all([
-        getActiveLearningPaths(),
         getActiveMicroLessons(),
         getActiveChallenges(),
         getActiveArticles(),
         getExperts(),
-        getActiveSuggestedReadings(),
     ]);
 
     const weeklyChallenges = challenges.filter(c => c.period === 'weekly');
     const monthlyChallenges = challenges.filter(c => c.period === 'monthly');
+
+    const suggestedReadingsData = [
+        {
+            emoji: '📘',
+            title: 'Cuando los padres se separan – Guía práctica para una separación consciente',
+            description: 'Una guía directa y sencilla que ayuda a los padres a comprender y acompañar emocionalmente a sus hijos durante el proceso de separación. Aporta estrategias prácticas para mantener la estabilidad afectiva, disminuir la culpa y fortalecer el vínculo desde la empatía.',
+            link: 'https://libroasupuerta.cl/catalogo/cuando-los-padres-se-separan',
+            whyRead: [
+                'Enseña cómo comunicar la separación de forma adecuada a los hijos.',
+                'Aporta recursos para manejar la culpa y el conflicto.',
+                'Favorece la construcción de un vínculo seguro tras la separación.'
+            ]
+        },
+        {
+            emoji: '📗',
+            title: 'Hijos frente a la separación de sus padres – Manual del ICEPH',
+            description: 'Manual desarrollado por el Instituto Chileno de Estudios de la Pareja y la Familia (ICEPH), con un enfoque psicodinámico y sistémico. Profundiza en cómo afecta la separación a los niños en distintas etapas evolutivas y entrega recomendaciones prácticas para proteger su salud mental.',
+            link: 'https://www.iceph.cl/wp-content/uploads/2021/11/Manual-Hijos-frente-a-la-separacion.pdf',
+            whyRead: [
+                'Describe reacciones comunes de los niños ante la separación.',
+                'Incluye sugerencias para manejar la convivencia entre ambos hogares.',
+                'Favorece el rol activo del padre en la contención emocional del menor.'
+            ]
+        },
+        {
+            emoji: '📙',
+            title: 'Ser padres después de la separación – Artículo de BioBioChile',
+            description: 'Artículo de divulgación que recoge las recomendaciones del psicólogo Christian Martínez para establecer una parentalidad efectiva tras la ruptura. Incluye consejos sobre comunicación, límites, afecto y coherencia entre ambos hogares, con lenguaje accesible.',
+            link: 'https://www.biobiochile.cl/noticias/vida-actual/consejos/2025/03/17/ser-padres-despues-de-la-separacion-experto-entrega-puntos-claves-para-lograr-una-crianza-saludable.shtml',
+            whyRead: [
+                'Cómo estructurar rutinas y acuerdos claros entre ambos padres.',
+                'Manejo de conflictos para no afectar emocionalmente a los hijos.',
+                'La importancia del rol paterno activo, afectivo y coherente.'
+            ]
+        }
+    ];
 
     return (
         <div className="space-y-12">
@@ -161,9 +203,9 @@ async function AcademiaVinculoContent() {
             </header>
 
             <div className="container mx-auto py-8 space-y-12">
-                <SectionCard title="Rutas de Aprendizaje" icon={GraduationCap}>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {learningPaths.map(path => <LearningPathCard key={path.id} path={path} />)}
+                <SectionCard title="Lecturas Sugeridas" icon={BookMarked}>
+                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {suggestedReadingsData.map((reading, index) => <DetailedReadingCard key={index} reading={reading} />)}
                     </div>
                 </SectionCard>
 
@@ -200,12 +242,6 @@ async function AcademiaVinculoContent() {
                      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {experts.map(expert => <ExpertCard key={expert.id} expert={expert} />)}
                      </div>
-                </SectionCard>
-
-                 <SectionCard title="Lecturas Sugeridas" icon={BookMarked}>
-                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        {suggestedReadings.map(reading => <ReadingCard key={reading.id} reading={reading} />)}
-                    </div>
                 </SectionCard>
 
                 <div className="relative rounded-lg overflow-hidden p-8 flex items-center bg-card shadow-lg border h-64">
