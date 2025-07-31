@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -74,6 +75,58 @@ const UserFormSchema = z.object({
     message: "La contraseña debe tener al menos 6 caracteres.",
     path: ["password"],
 });
+
+export async function createFriendInvitationAction(formData: FormData): Promise<{ success: boolean; message: string; }> {
+    const parentUid = formData.get('parentUid') as string;
+    const name = formData.get('name') as string;
+    const email = formData.get('email') as string;
+    const role = formData.get('role') as string;
+    const avatarFile = formData.get('avatar') as File | null;
+    
+    if (!parentUid || !name || !email || !role) {
+        return { success: false, message: "Faltan datos obligatorios (padre, nombre, email, rol)." };
+    }
+    
+    try {
+        const existingUser = await getUserByEmail(email);
+        if (existingUser) {
+            return { success: false, message: "Este correo electrónico ya está en uso." };
+        }
+
+        const friendId = uuidv4();
+        let avatarUrl = `https://placehold.co/256x256.png?text=${name.charAt(0).toUpperCase()}`;
+
+        if (avatarFile) {
+            const storageRef = ref(storage, `users/${friendId}/avatar/${avatarFile.name}`);
+            await uploadBytes(storageRef, avatarFile);
+            avatarUrl = await getDownloadURL(storageRef);
+        }
+
+        const friendData: Partial<User> = {
+            name: name,
+            email: email,
+            nickname: role, // Use role as nickname for friends
+            avatarUrl: avatarUrl,
+            role: 'amigo',
+            parentUid: parentUid, // Link to family head
+            status: 'invited',
+            createdAt: new Date(),
+        };
+        
+        await setDoc(doc(db, 'users', friendId), friendData);
+        
+        await updateDoc(doc(db, 'users', parentUid), {
+            familyMembers: arrayUnion(friendId),
+        });
+
+        revalidatePath('/familia');
+        return { success: true, message: `Se ha invitado a ${name}. Debe registrarse con el correo ${email} para unirse.` };
+    } catch (error) {
+        console.error("Error creating friend invitation:", error);
+        return { success: false, message: "Error del servidor al crear la invitación." };
+    }
+}
+
 
 export async function createChildInvitationAction(formData: FormData): Promise<{ success: boolean; message: string; }> {
     const parentUid = formData.get('parentUid') as string;
@@ -155,10 +208,11 @@ export async function finalizeRegistration(formData: FormData): Promise<{ succes
         const invitationSnapshot = await getDocs(q);
 
         if (!invitationSnapshot.empty) {
-            // This is an invited child completing registration
+            // This is an invited child/friend completing registration
             const invitationDoc = invitationSnapshot.docs[0];
             const invitationData = invitationDoc.data();
             const parentId = invitationData.parentUid;
+            const role = invitationData.role; // 'hijo' or 'amigo'
 
             // Delete the temporary invitation document
             await deleteDoc(invitationDoc.ref);
@@ -176,9 +230,9 @@ export async function finalizeRegistration(formData: FormData): Promise<{ succes
             await setDoc(doc(db, 'users', uid), {
                 name,
                 email,
-                nickname: nickname || '',
+                nickname: nickname || invitationData.nickname || '',
                 avatarUrl: invitationData.avatarUrl || avatarUrl, // Prefer avatar set by parent
-                role: 'hijo',
+                role: role,
                 status: 'active',
                 parentUid: parentId,
                 createdAt: serverTimestamp(),

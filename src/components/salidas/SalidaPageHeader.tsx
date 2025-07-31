@@ -6,7 +6,6 @@ import { Calendar } from 'lucide-react';
 import JourneyProgressBar from './JourneyProgressBar';
 import CancelOutingButton from './CancelOutingButton';
 import type { ReactNode } from 'react';
-import ShareButton from './ShareButton'; // Importar el nuevo componente
 
 interface SalidaPageHeaderProps {
   title: string;
@@ -41,7 +40,6 @@ export default function SalidaPageHeader({
             </div>
              {userId && (
               <div className="shrink-0 flex items-center gap-2">
-                 <ShareButton salidaId={salidaId} userId={userId} />
                 <CancelOutingButton salidaId={salidaId} userId={userId} />
               </div>
             )}

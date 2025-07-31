@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { z } from 'zod';
@@ -481,69 +482,4 @@ export async function getEvaluation(salidaId: string, userId: string): Promise<F
         console.error("Error fetching evaluation:", error);
         return null;
     }
-}
-
-
-// --- Sharing Actions ---
-type ShareState = {
-  success: boolean;
-  url?: string;
-  message: string;
-};
-
-export async function manageShareLinkAction(
-  prevState: ShareState,
-  formData: FormData
-): Promise<ShareState> {
-  const userId = formData.get('userId') as string;
-  const salidaId = formData.get('salidaId') as string;
-
-  if (!userId || !salidaId) {
-    return { success: false, message: "Faltan datos para compartir." };
-  }
-  
-  try {
-    const user = await getUserById(userId);
-    if (!user) {
-      return { success: false, message: 'Usuario no encontrado.' };
-    }
-
-    const familyHeadUid = user.parentUid || userId;
-    
-    if (!familyHeadUid) {
-      return { success: false, message: 'No se pudo determinar el grupo familiar.' };
-    }
-
-    const salidaRef = doc(db, 'users', familyHeadUid, 'salidas', salidaId);
-    const salidaSnap = await getDoc(salidaRef);
-
-    if (!salidaSnap.exists()) {
-      return { success: false, message: 'Salida no encontrada.' };
-    }
-
-    let token = salidaSnap.data().shareToken;
-    let isCurrentlyPublic = salidaSnap.data().isPublic;
-
-    if (!token) {
-      token = uuidv4();
-      await updateDoc(salidaRef, { shareToken: token, isPublic: true });
-    } else if (!isCurrentlyPublic) {
-      await updateDoc(salidaRef, { isPublic: true });
-    }
-    
-    revalidatePath(AppRoutes.salidas.itinerario(salidaId));
-    
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    if (!baseUrl) {
-      console.error("NEXT_PUBLIC_BASE_URL is not set.");
-      return { success: false, message: "Error de configuración del servidor: falta la URL base." };
-    }
-    
-    const url = new URL(AppRoutes.salidas.public(token), baseUrl).toString();
-    return { success: true, url: url, message: 'Enlace generado.' };
-
-  } catch (error) {
-    console.error("Error creating/managing share link:", error);
-    return { success: false, message: "Error del servidor al crear el enlace para compartir." };
-  }
 }

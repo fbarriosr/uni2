@@ -68,9 +68,9 @@ export interface PastActivityRating {
 }
 
 // User Management Types
-export type UserRole = 'admin' | 'user' | 'hijo';
+export type UserRole = 'admin' | 'user' | 'hijo' | 'amigo';
 
-export const USER_ROLES: UserRole[] = ['admin', 'user', 'hijo'];
+export const USER_ROLES: UserRole[] = ['admin', 'user', 'hijo', 'amigo'];
 
 export interface Address {
   id: string;
@@ -113,8 +113,6 @@ export interface UserOuting {
   status: 'scheduled' | 'completed' | 'cancelled';
   createdAt: string; // Changed to string
   evaluationSubmitted?: boolean;
-  shareToken?: string; // For public sharing
-  isPublic?: boolean; // To enable/disable sharing
 }
 
 export interface Coupon {
