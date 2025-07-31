@@ -133,7 +133,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full lg:grid lg:min-h-[calc(100vh_-_var(--header-height))] lg:grid-cols-2 xl:min-h-[calc(100vh_-_var(--header-height))]">
+    <div className="w-full h-full lg:grid lg:grid-cols-2">
       <div className="hidden bg-muted lg:block">
         <Image
           src="https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Funo.jpg?alt=media&token=84eec251-46c8-47ca-b31f-3eb9886c8af7"
