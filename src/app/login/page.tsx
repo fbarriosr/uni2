@@ -7,14 +7,15 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+import { useState, useEffect } from 'react';
+import { LogIn, Loader2, KeyRound, Mail } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { auth } from '@/lib/firebase';
+import { AppRoutes } from '@/lib/urls';
+import { signInWithEmailAndPassword, sendPasswordResetEmail, type AuthError } from 'firebase/auth';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,14 +27,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
-import { LogIn, Loader2, KeyRound, Mail } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/firebase'; // Import the auth instance
-import { AppRoutes } from '@/lib/urls'; // Import AppRoutes
-import { signInWithEmailAndPassword, sendPasswordResetEmail, type AuthError } from 'firebase/auth';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Por favor, introduce un correo electrónico válido.' }),
@@ -62,23 +55,18 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
-      // Signed in 
       const user = userCredential.user;
       toast({
         title: '¡Inicio de Sesión Exitoso!',
         description: `Bienvenido de nuevo, ${user.email}.`,
       });
-      // console.log('Firebase User:', user); // Line removed
-      router.push('/inicio'); // Redirect to inicio page
+      router.push('/inicio');
     } catch (error) {
       let errorTitle = 'Error de Inicio de Sesión';
       let errorMessage = 'Ocurrió un error inesperado al intentar iniciar sesión.';
 
       if (error instanceof Error && 'code' in error) {
-        // It's likely a FirebaseError or AuthError
-        const authError = error as AuthError; // Cast to AuthError to access specific codes
-        // console.error('Login error (Firebase AuthError):', authError.code, authError.message); // Line removed
-        
+        const authError = error as AuthError;
         switch (authError.code) {
           case 'auth/user-not-found':
           case 'auth/wrong-password':
@@ -98,7 +86,6 @@ export default function LoginPage() {
             errorMessage = `Error al iniciar sesión. Si el problema persiste, contacta a soporte. Código: ${authError.code}`;
         }
       } else {
-        // Handle non-Firebase errors or errors without a 'code' property
         console.error('Login error (Non-Firebase or unknown structure):', error);
       }
 
@@ -144,32 +131,23 @@ export default function LoginPage() {
       setIsPasswordResetLoading(false);
     }
   };
-  
-  // Effect to clear password field if email changes, for example.
-  // This is optional and depends on desired UX.
-  const emailForEffect = form.watch('email');
-  useEffect(() => {
-    // form.setValue('password', ''); // Example: clear password if email changes
-  }, [emailForEffect, form]);
 
   return (
-    <div className="flex min-h-[calc(100vh-var(--header-height,4rem)-var(--footer-height,8rem)-1px)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md shadow-xl">
-        <CardHeader className="space-y-1 text-center">
-          <LogIn className="mx-auto h-10 w-10 text-primary" />
-          <CardTitle className="text-3xl font-headline">Iniciar Sesión</CardTitle>
-          <CardDescription>
-            Accede a tu cuenta para gestionar tus actividades.
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
+    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2 xl:min-h-screen">
+      <div className="flex items-center justify-center py-12">
+        <div className="mx-auto grid w-[350px] gap-6">
+          <div className="grid gap-2 text-center">
+            <h1 className="text-3xl font-bold">Iniciar Sesión</h1>
+            <p className="text-balance text-muted-foreground">
+              Ingresa tu correo para acceder a tu cuenta
+            </p>
+          </div>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+            <div className="grid gap-2">
               <Label htmlFor="email">Correo Electrónico</Label>
               <Input
                 id="email"
                 type="email"
-                autoComplete="email"
                 placeholder="tu@correo.com"
                 {...form.register('email')}
                 disabled={isLoading}
@@ -180,30 +158,16 @@ export default function LoginPage() {
                 </p>
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="••••••••"
-                {...form.register('password')}
-                disabled={isLoading}
-              />
-              {form.formState.errors.password && (
-                <p className="text-sm text-destructive mt-1">
-                  {form.formState.errors.password.message}
-                </p>
-              )}
-            </div>
-            <div className="text-sm">
+            <div className="grid gap-2">
+              <div className="flex items-center">
+                <Label htmlFor="password">Contraseña</Label>
                 <AlertDialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
                   <AlertDialogTrigger asChild>
-                    <Button variant="link" type="button" className="p-0 h-auto font-medium text-primary hover:underline">
+                    <Button variant="link" type="button" className="ml-auto inline-block text-sm underline p-0 h-auto">
                       ¿Olvidaste tu contraseña?
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle className="flex items-center">
                         <KeyRound className="mr-2 h-5 w-5" /> Restablecer Contraseña
@@ -239,29 +203,36 @@ export default function LoginPage() {
                   </AlertDialogContent>
                 </AlertDialog>
               </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <LogIn className="mr-2 h-4 w-4" />
+              <Input id="password" type="password" {...form.register('password')} disabled={isLoading} />
+               {form.formState.errors.password && (
+                <p className="text-sm text-destructive mt-1">
+                  {form.formState.errors.password.message}
+                </p>
               )}
-              Ingresar
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Iniciar Sesión
             </Button>
-            <p className="text-center text-sm text-muted-foreground">
-              ¿No tienes una cuenta?{' '}
-              <Link
-                href="/register" 
-                href={AppRoutes.register} // Use AppRoutes for the link
-                className="font-medium text-primary hover:underline" // Line removed
-              >
-                Regístrate
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
+          </form>
+          <div className="mt-4 text-center text-sm">
+            ¿No tienes una cuenta?{" "}
+            <Link href={AppRoutes.register} className="underline">
+              Regístrate
+            </Link>
+          </div>
+        </div>
+      </div>
+      <div className="hidden bg-muted lg:block">
+        <Image
+          src="https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Funo.jpg?alt=media&token=84eec251-46c8-47ca-b31f-3eb9886c8af7"
+          alt="Image"
+          width="1920"
+          height="1080"
+          data-ai-hint="family having fun"
+          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+        />
+      </div>
     </div>
-  );
+  )
 }

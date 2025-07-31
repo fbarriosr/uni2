@@ -45,7 +45,7 @@ const MicroLessonCard = ({ lesson }: { lesson: any }) => (
 
 const ExpertCard = ({ expert }: { expert: any }) => (
     <Link
-        href={`${AppRoutes.vinculoExpertDetail(expert.id)}#contacto`}
+        href={`${AppRoutes.vinculoExpertDetail(expert.id)}`}
         className="block group w-full h-full"
     >
       <Card
