@@ -121,6 +121,7 @@ export default function AppLayoutClient({
 
   const showSidebar = !!currentUser;
   const showChatbar = !!currentUser;
+  const showNavbar = !['/login', '/register'].includes(pathname);
   const showFooter = !['/login', '/register'].includes(pathname);
 
   return (
@@ -149,19 +150,21 @@ export default function AppLayoutClient({
           <div className={cn(
             "flex flex-col flex-1 overflow-hidden transition-all duration-300 ease-in-out"
           )}>
-            <Navbar 
-              user={currentUser}
-              activeAddress={activeAddress}
-              isAuthLoading={authLoading}
-              onToggleSidebar={handleToggleSidebar}
-              isSidebarVisible={showSidebar}
-              onToggleChatbar={handleToggleChatbar}
-            />
+            {showNavbar && (
+                <Navbar 
+                user={currentUser}
+                activeAddress={activeAddress}
+                isAuthLoading={authLoading}
+                onToggleSidebar={handleToggleSidebar}
+                isSidebarVisible={showSidebar}
+                onToggleChatbar={handleToggleChatbar}
+                />
+            )}
             <main 
                 ref={mainScrollRef}
                 className={cn(
                 "flex-1 overflow-y-auto overflow-x-hidden",
-                 "pt-[var(--header-height)]"
+                 showNavbar && "pt-[var(--header-height)]"
                  )}>
                {authLoading ? (
                 <div className="flex items-center justify-center h-full">
