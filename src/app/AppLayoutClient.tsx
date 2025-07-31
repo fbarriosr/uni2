@@ -121,6 +121,7 @@ export default function AppLayoutClient({
 
   const showSidebar = !!currentUser;
   const showChatbar = !!currentUser;
+  const showFooter = !['/login', '/register'].includes(pathname);
 
   return (
     <ThemeProvider>
@@ -169,7 +170,7 @@ export default function AppLayoutClient({
                ) : (
                 <>
                   {children}
-                  <Footer />
+                  {showFooter && <Footer />}
                 </>
                )}
             </main>
