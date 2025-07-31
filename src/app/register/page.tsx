@@ -7,22 +7,16 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useState, ChangeEvent } from 'react';
 import { UserPlus, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { createUserWithEmailAndPassword, type AuthError } from 'firebase/auth';
 import { finalizeRegistration } from '@/lib/actions/userActions';
+import { AppRoutes } from '@/lib/urls';
 
 const registerSchema = z.object({
   name: z.string().min(1, { message: 'El nombre es obligatorio.' }),
@@ -132,18 +126,27 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-var(--header-height,4rem)-var(--footer-height,8rem)-1px)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md shadow-xl">
-        <CardHeader className="space-y-1 text-center">
-          <UserPlus className="mx-auto h-10 w-10 text-primary" />
-          <CardTitle className="text-3xl font-headline">Crear Cuenta</CardTitle>
-          <CardDescription>
-            Regístrate para empezar a organizar tus fines de semana en familia.
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
+    <div className="w-full h-full lg:grid lg:grid-cols-2">
+       <div className="hidden bg-muted lg:block">
+        <Image
+          src="https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Fbanner.jpg?alt=media&token=c72a3498-445f-4efc-b68e-df52660c87a8"
+          alt="Image"
+          width="1920"
+          height="1080"
+          data-ai-hint="family having fun"
+          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+        />
+      </div>
+      <div className="flex items-center justify-center py-12">
+        <div className="mx-auto grid w-[380px] gap-6">
+          <div className="grid gap-2 text-center">
+            <h1 className="text-3xl font-bold">Crear Cuenta</h1>
+            <p className="text-balance text-muted-foreground">
+              Ingresa tus datos para empezar a crear recuerdos.
+            </p>
+          </div>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+             <div className="grid gap-2">
               <Label htmlFor="name">Nombre</Label>
               <Input
                 id="name"
@@ -158,40 +161,7 @@ export default function RegisterPage() {
                 </p>
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="avatar">Avatar (Opcional)</Label>
-              <div className="flex items-center gap-4">
-                <Input
-                  id="avatar"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  disabled={isLoading}
-                />
-                {avatarPreview && (
-                  <img
-                    src={avatarPreview}
-                    alt="Avatar Preview"
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
-                )
-              }
-            
-            
-
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="nickname">Nickname (Opcional)</Label>
-              <Input
-                id="nickname"
-                type="text"
-                placeholder="Tu nickname"
-                {...form.register('nickname')}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
+             <div className="grid gap-2">
               <Label htmlFor="email">Correo Electrónico</Label>
               <Input
                 id="email"
@@ -206,38 +176,26 @@ export default function RegisterPage() {
                 </p>
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Mínimo 6 caracteres"
-                {...form.register('password')}
-                disabled={isLoading}
-              />
-              {form.formState.errors.password && (
-                <p className="text-sm text-destructive mt-1">
-                  {form.formState.errors.password.message}
-                </p>
-              )}
+            <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                    <Label htmlFor="password">Contraseña</Label>
+                    <Input id="password" type="password" {...form.register('password')} disabled={isLoading} />
+                    {form.formState.errors.password && (
+                        <p className="text-sm text-destructive mt-1">
+                        {form.formState.errors.password.message}
+                        </p>
+                    )}
+                </div>
+                 <div className="grid gap-2">
+                    <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+                    <Input id="confirmPassword" type="password" {...form.register('confirmPassword')} disabled={isLoading} />
+                     {form.formState.errors.confirmPassword && (
+                        <p className="text-sm text-destructive mt-1">
+                        {form.formState.errors.confirmPassword.message}
+                        </p>
+                    )}
+                </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="Repite tu contraseña"
-                {...form.register('confirmPassword')}
-                disabled={isLoading}
-              />
-              {form.formState.errors.confirmPassword && (
-                <p className="text-sm text-destructive mt-1">
-                  {form.formState.errors.confirmPassword.message}
-                </p>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -246,15 +204,15 @@ export default function RegisterPage() {
               )}
               Registrarme
             </Button>
-            <p className="text-center text-sm text-muted-foreground">
-              ¿Ya tienes una cuenta?{' '}
-              <Link href="/login" className="font-medium text-primary hover:underline">
-                Inicia Sesión
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
+          </form>
+          <div className="mt-4 text-center text-sm">
+            ¿Ya tienes una cuenta?{" "}
+            <Link href={AppRoutes.login} className="underline">
+              Inicia Sesión
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
