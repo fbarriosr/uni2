@@ -330,17 +330,6 @@ export default function SalidaDetailClientPage({ salidaId, initialActivities }: 
             currentStep={currentJourneyStep}
         />
         
-        {/* Search Bar - Moved to activity section */}
-        <div className="mt-8 px-4 flex items-center gap-2">
-          <Search className="h-5 w-5 text-muted-foreground" />
-          <Input
-            placeholder="Buscar actividades en esta salida..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1"
-          />
-        </div>
-
         {/* Participants section (not filtered by the main search for activities) */}
         <div className="mt-4 flex flex-col items-center justify-center gap-3">
             <div className="flex items-center gap-3">
@@ -383,6 +372,20 @@ export default function SalidaDetailClientPage({ salidaId, initialActivities }: 
                 )}
             </aside>
             <div className="lg:col-span-2 space-y-8">
+                {/* Search Bar */}
+                <div className="px-4 lg:px-0">
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
+                      <Input
+                        type="text"
+                        placeholder="Buscar actividades por nombre o descripción..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-12 pr-4 py-3 h-14 text-base shadow-lg rounded-full bg-card border-border"
+                      />
+                    </div>
+                </div>
+
                 {showMyActivities && <SuggestionCategorySection title="Mis Actividades Seleccionadas" activities={filteredMyActivities} salidaId={salidaId} hideSeeAll={true} />}
                 {showSuggestions && <SuggestionCategorySection title="Sugerencias" activities={filteredSuggestions} salidaId={salidaId} />}
                 {showLibreGratuito && <SuggestionCategorySection title="Libre y gratuito" activities={filteredLibreGratuito} salidaId={salidaId} />} {/* Use filtered list */}
