@@ -134,6 +134,16 @@ export default function LoginPage() {
 
   return (
     <div className="w-full lg:grid lg:min-h-[calc(100vh_-_var(--header-height))] lg:grid-cols-2 xl:min-h-[calc(100vh_-_var(--header-height))]">
+      <div className="hidden bg-muted lg:block">
+        <Image
+          src="https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Funo.jpg?alt=media&token=84eec251-46c8-47ca-b31f-3eb9886c8af7"
+          alt="Image"
+          width="1920"
+          height="1080"
+          data-ai-hint="family having fun"
+          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+        />
+      </div>
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
@@ -222,16 +232,6 @@ export default function LoginPage() {
             </Link>
           </div>
         </div>
-      </div>
-      <div className="hidden bg-muted lg:block">
-        <Image
-          src="https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Funo.jpg?alt=media&token=84eec251-46c8-47ca-b31f-3eb9886c8af7"
-          alt="Image"
-          width="1920"
-          height="1080"
-          data-ai-hint="family having fun"
-          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
       </div>
     </div>
   )
