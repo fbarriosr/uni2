@@ -11,6 +11,22 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+type Props = {
+  params: { id: string }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const expert = await getLegalExpertById(params.id);
+  if (!expert) {
+    return { title: 'Experto no encontrado' };
+  }
+  return {
+    title: `Asesor Legal: ${expert.name}`,
+    description: `Información sobre el asesor legal ${expert.name}, especialista en ${expert.specialty}.`,
+  };
+}
 
 // A loading component to show while the page is being prepared
 function LegalExpertDetailPageLoading() {

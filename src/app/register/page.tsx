@@ -17,6 +17,13 @@ import { auth } from '@/lib/firebase';
 import { createUserWithEmailAndPassword, type AuthError } from 'firebase/auth';
 import { finalizeRegistration } from '@/lib/actions/userActions';
 import { AppRoutes } from '@/lib/urls';
+import type { Metadata } from 'next';
+
+// This is a client component, but we can export metadata from it in Next.js 13+
+export const metadata: Metadata = {
+  title: 'Crear Cuenta',
+};
+
 
 const registerSchema = z.object({
   name: z.string().min(1, { message: 'El nombre es obligatorio.' }),
@@ -127,17 +134,7 @@ export default function RegisterPage() {
 
   return (
     <div className="w-full h-full lg:grid lg:grid-cols-2">
-       <div className="hidden bg-muted lg:block">
-        <Image
-          src="https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Fbanner.jpg?alt=media&token=c72a3498-445f-4efc-b68e-df52660c87a8"
-          alt="Image"
-          width="1920"
-          height="1080"
-          data-ai-hint="family having fun"
-          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
-      </div>
-      <div className="flex items-center justify-center py-12">
+       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[380px] gap-6">
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold">Crear Cuenta</h1>
@@ -212,6 +209,16 @@ export default function RegisterPage() {
             </Link>
           </div>
         </div>
+      </div>
+      <div className="hidden bg-muted lg:block">
+        <Image
+          src="https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Fbanner.jpg?alt=media&token=c72a3498-445f-4efc-b68e-df52660c87a8"
+          alt="Image"
+          width="1920"
+          height="1080"
+          data-ai-hint="family having fun"
+          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+        />
       </div>
     </div>
   );

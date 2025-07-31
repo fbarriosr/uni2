@@ -11,6 +11,12 @@ import Link from 'next/link';
 import { AppRoutes } from '@/lib/urls';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Asesoría Legal',
+  description: 'Encuentra recursos, artículos y expertos en temas legales familiares.',
+};
 
 
 // --- Data for Laws ---
@@ -265,5 +271,3 @@ export default function AsesoriaLegalPage() {
         </AuthCheck>
     );
 }
-
-    

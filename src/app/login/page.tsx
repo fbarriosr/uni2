@@ -27,6 +27,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import type { Metadata } from 'next';
+
+// This is a client component, but we can export metadata from it in Next.js 13+
+export const metadata: Metadata = {
+  title: 'Iniciar Sesión',
+};
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Por favor, introduce un correo electrónico válido.' }),

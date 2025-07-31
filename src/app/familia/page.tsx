@@ -3,6 +3,12 @@ import AuthCheck from '@/components/AuthCheck';
 import FamiliaClientPage from '@/components/familia/FamiliaClientPage';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Mi Familia',
+  description: 'Gestiona los miembros de tu grupo familiar y sus permisos.',
+};
 
 export default function FamiliaPage() {
   return (

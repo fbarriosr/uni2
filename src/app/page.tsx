@@ -1,7 +1,8 @@
-'use client'; // 👈 Esto resuelve el error
+
+'use client'; 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Smile, Heart, Star } from 'lucide-react'; // Example icons
+import { Smile, Heart, Star } from 'lucide-react'; 
 
 // Import carousel components
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";

@@ -3,6 +3,12 @@ import ClaimForm from "@/components/claims/ClaimForm";
 import AuthCheck from "@/components/AuthCheck";
 import { createClaimAction } from "@/lib/actions/claimActions";
 import { MessageSquareQuoteIcon } from "lucide-react";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Soporte y Reclamos',
+  description: 'Envíanos tus dudas, reclamos o sugerencias para ayudarnos a mejorar.',
+};
 
 export default function ReclamosPage() {
     return (

@@ -22,7 +22,13 @@ import { es } from 'date-fns/locale';
 import { getUserById, getUsersByIds, getActivityById } from '@/lib/data';
 import type { User, Activity } from '@/lib/types';
 import type { ImageHighlight } from '@/components/CalendarDisplay';
+import type { Metadata } from 'next';
 
+// This is a client component, but we can export metadata from it in Next.js 13+
+export const metadata: Metadata = {
+  title: 'Planear Nueva Salida',
+  description: 'Organiza el panorama perfecto para tu familia seleccionando participantes, fechas y preferencias.',
+};
 
 const AiSummaryBox = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-lg shadow-sm">

@@ -4,6 +4,12 @@ import AuthCheck from '@/components/AuthCheck';
 import ActivitiesGridClientPage from '@/components/actividades/ActivitiesGridClientPage';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Explorar Actividades',
+  description: 'Busca y filtra actividades para encontrar el panorama perfecto para tu familia.',
+};
 
 function ActivitiesExplorerLoading() {
     return (

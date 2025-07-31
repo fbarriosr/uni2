@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -252,6 +253,10 @@ export default function InicioPage() {
     });
     return () => unsubscribe();
   }, [fetchPageData]);
+  
+  useEffect(() => {
+    document.title = appUser ? `Inicio - ${appUser.name}` : 'Inicio';
+  }, [appUser]);
 
   const mostImmediateOuting = useMemo(() => {
     return upcomingOutings.find(o => o.isSpecialHighlight) || null;

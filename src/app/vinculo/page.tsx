@@ -13,6 +13,12 @@ import { Suspense } from 'react';
 import { AppRoutes } from '@/lib/urls';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Academia del Vínculo',
+  description: 'Encuentra recursos, artículos y expertos para fortalecer la conexión con tus hijos.',
+};
 
 // --- Reusable Components for this Page ---
 
@@ -45,7 +51,7 @@ const MicroLessonCard = ({ lesson }: { lesson: any }) => (
 
 const ExpertCard = ({ expert }: { expert: any }) => (
     <Link
-        href={`${AppRoutes.vinculoExpertDetail(expert.id)}`}
+        href={`${AppRoutes.vinculoExpertDetail(expert.id)}#contacto`}
         className="block group w-full h-full"
     >
       <Card

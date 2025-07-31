@@ -9,6 +9,22 @@ import { Briefcase, Clock, Globe, Quote, BrainCircuit, User, Pencil, ArrowRight 
 import { Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+type Props = {
+  params: { id: string }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const expert = await getExpertById(params.id);
+  if (!expert) {
+    return { title: 'Experto no encontrado' };
+  }
+  return {
+    title: `Experto: ${expert.name}`,
+    description: `Conoce más sobre ${expert.name}, especialista en ${expert.specialty}.`,
+  };
+}
 
 // A loading component to show while the page is being prepared
 function ExpertDetailPageLoading() {
@@ -65,9 +81,10 @@ async function ExpertDetailContent({ expertId }: { expertId: string }) {
     }
 
     return (
-        <div id="contacto" className="container mx-auto py-12 px-4 max-w-5xl">
+        <div className="container mx-auto py-12 px-4 max-w-5xl">
             <header className="flex flex-col md:flex-row items-center gap-8 mb-10 text-center md:text-left">
                 <Image
+                    id="contacto"
                     src={expert.photo || 'https://placehold.co/256x256.png'}
                     alt={expert.name}
                     width={192}
@@ -92,7 +109,7 @@ async function ExpertDetailContent({ expertId }: { expertId: string }) {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
                 {/* Left Column for Contact & AI */}
-                <div  className="lg:col-span-1 space-y-6 scroll-mt-24">
+                <div className="lg:col-span-1 space-y-6 scroll-mt-24">
                      <Card>
                         <CardHeader>
                             <CardTitle className="text-lg">Información de Contacto</CardTitle>

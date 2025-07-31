@@ -4,6 +4,23 @@ import AuthCheck from '@/components/AuthCheck';
 import ActivityDetailClientPage from '@/components/actividades/ActivityDetailClientPage';
 import { notFound } from 'next/navigation';
 import type { Comment } from '@/lib/types';
+import type { Metadata } from 'next';
+
+type Props = {
+  params: { id: string }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const activity = await getActivityById(params.id);
+  if (!activity) {
+    return { title: 'Actividad no encontrada' };
+  }
+  return {
+    title: `Actividad: ${activity.name}`,
+    description: activity.description,
+  };
+}
+
 
 interface ActivityDetailsPageProps {
   params: { id: string };
