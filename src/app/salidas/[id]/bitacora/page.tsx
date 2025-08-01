@@ -6,15 +6,16 @@ import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Loader2, Camera, MapPin, MessageSquare, Mic } from 'lucide-react';
+import { Loader2, Camera, MessageSquare, Mic, MapPin } from 'lucide-react';
 
-import type { SalidaStatus } from '@/lib/types';
 import AuthCheck from '@/components/AuthCheck';
 import SalidaPageHeader from '@/components/salidas/SalidaPageHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getSalidaById } from '@/lib/actions/salidaActions';
 import Link from 'next/link';
+import TimelineEvent from '@/components/salidas/bitacora/TimelineEvent';
+import type { BitacoraEvent } from '@/lib/types';
 
 interface BitacoraPageProps {
   params: Promise<{ id: string }>;
@@ -28,12 +29,45 @@ interface SalidaData {
   };
 }
 
+// Mock data for demonstration purposes
+const mockBitacora: BitacoraEvent[] = [
+    {
+        id: '1',
+        timestamp: new Date('2023-10-26T10:05:00').toISOString(),
+        type: 'inicio',
+        text: 'Salida iniciada en Parque Metropolitano',
+        location: { latitude: -33.4269, longitude: -70.6309 },
+    },
+    {
+        id: '2',
+        timestamp: new Date('2023-10-26T11:30:00').toISOString(),
+        type: 'foto',
+        text: '¡Vista desde el teleférico!',
+        imageUrl: 'https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/actividades%2Fparquemet_01.jpg?alt=media&token=c33e4429-a11f-42fa-9e52-1404941e2227',
+    },
+    {
+        id: '3',
+        timestamp: new Date('2023-10-26T13:00:00').toISOString(),
+        type: 'comentario',
+        text: 'Almorzamos en el pícnic. El día está increíble, mucho sol.',
+    },
+    {
+        id: '4',
+        timestamp: new Date('2023-10-26T14:15:00').toISOString(),
+        type: 'fin',
+        text: 'Salida finalizada. ¡Un gran día!',
+        location: { latitude: -33.4275, longitude: -70.6315 },
+    }
+];
+
+
 function BitacoraPageContent({ params: paramsPromise }: BitacoraPageProps) {
   const params = use(paramsPromise);
   const { id: salidaId } = params;
   const [salidaData, setSalidaData] = useState<SalidaData | null>(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [bitacoraEvents, setBitacoraEvents] = useState<BitacoraEvent[]>(mockBitacora); // Using mock data
 
   const fetchSalidaData = useCallback(async (userId: string) => {
     setLoading(true);
@@ -83,50 +117,59 @@ function BitacoraPageContent({ params: paramsPromise }: BitacoraPageProps) {
     : `Para el ${format(salidaData.dateRange.from, 'd MMMM yyyy', { locale: es })}`;
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-4xl">
+    <div className="container mx-auto py-8 px-4 max-w-5xl">
       <SalidaPageHeader
         title="Bitácora de la Salida"
         subtitle={formattedDate}
         salidaId={salidaId}
         userId={user?.uid || null}
-        currentStep={4} // Corrected step number
+        currentStep={4}
       />
       
-      <main className="mt-8 space-y-6">
-          <Card>
-              <CardHeader>
-                  <CardTitle>Controles de la Salida</CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Button size="lg" className="bg-green-600 hover:bg-green-700">
-                      <MapPin className="mr-2 h-5 w-5" /> Iniciar Salida (Registrar GPS)
-                  </Button>
-                   <Button size="lg" variant="destructive">
-                      <MapPin className="mr-2 h-5 w-5" /> Finalizar Salida (Registrar GPS)
-                  </Button>
-              </CardContent>
-          </Card>
+      <main className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main content: Timeline */}
+        <div className="lg:col-span-2">
+            <div className="space-y-8">
+                {bitacoraEvents.length > 0 ? (
+                    bitacoraEvents.map(event => (
+                        <TimelineEvent key={event.id} event={event} />
+                    ))
+                ) : (
+                    <div className="text-center py-16 bg-muted rounded-lg">
+                        <p className="text-muted-foreground">Aún no hay eventos en la bitácora.</p>
+                        <p className="text-sm text-muted-foreground mt-1">¡Inicia la salida para comenzar a registrar!</p>
+                    </div>
+                )}
+            </div>
+        </div>
 
-           <Card>
+        {/* Sidebar: Controls */}
+        <aside className="lg:col-span-1 lg:sticky top-24 h-fit">
+            <Card className="shadow-lg">
               <CardHeader>
-                  <CardTitle>Añadir a la Bitácora</CardTitle>
+                  <CardTitle>Panel de Control</CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <Button variant="outline" size="lg">
+              <CardContent className="space-y-3">
+                  <Button size="lg" className="w-full bg-green-600 hover:bg-green-700">
+                      <MapPin className="mr-2 h-5 w-5" /> Iniciar Salida
+                  </Button>
+                   <Button size="lg" variant="destructive" className="w-full">
+                      <MapPin className="mr-2 h-5 w-5" /> Finalizar Salida
+                  </Button>
+                  <hr className="my-4 border-dashed" />
+                  <Button variant="outline" className="w-full">
                       <MessageSquare className="mr-2 h-5 w-5" /> Añadir Comentario
                   </Button>
-                  <Button variant="outline" size="lg">
-                      <Camera className="mr-2 h-5 w-5" /> Subir Foto
+                  <Button variant="outline" className="w-full">
+                      <Camera className="mr-2 h-5 w-5" /> Subir Foto/Video
                   </Button>
-                   <Button variant="outline" size="lg">
-                      <Mic className="mr-2 h-5 w-5" /> Grabar Audio
+                   <Button variant="outline" className="w-full">
+                      <Mic className="mr-2 h-5 w-5" /> Grabar Nota de Voz
                   </Button>
               </CardContent>
           </Card>
-
-          <div className="text-center py-10">
-              <p className="text-muted-foreground">La funcionalidad completa de la bitácora, incluyendo el registro de eventos y la exportación, se implementará en la siguiente fase.</p>
-          </div>
+           <p className="text-xs text-muted-foreground text-center mt-4">La exportación a PDF se implementará en una fase futura.</p>
+        </aside>
       </main>
     </div>
   );
