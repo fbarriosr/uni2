@@ -6,12 +6,6 @@ import AuthCheck from '@/components/AuthCheck';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { ArrowRight, Activity, Ticket, User, ClipboardList, BookOpen, GraduationCap, Trophy, FileText, Star, BookMarked, Gavel, Bot } from 'lucide-react';
 import { AppRoutes } from '@/lib/urls';
-import type { Metadata } from 'next';
-
-// Although this is a client component, Next.js can still extract metadata
-export const metadata: Metadata = {
-  title: 'Panel de Administración',
-};
 
 const adminSections = [
   {

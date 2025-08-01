@@ -17,13 +17,6 @@ import { auth } from '@/lib/firebase';
 import { createUserWithEmailAndPassword, type AuthError } from 'firebase/auth';
 import { finalizeRegistration } from '@/lib/actions/userActions';
 import { AppRoutes } from '@/lib/urls';
-import type { Metadata } from 'next';
-
-// This is a client component, but we can export metadata from it in Next.js 13+
-export const metadata: Metadata = {
-  title: 'Crear Cuenta',
-};
-
 
 const registerSchema = z.object({
   name: z.string().min(1, { message: 'El nombre es obligatorio.' }),

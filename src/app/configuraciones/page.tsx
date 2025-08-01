@@ -26,14 +26,6 @@ import AddressForm from "@/components/configuraciones/AddressForm";
 import { AppRoutes } from "@/lib/urls";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import type { Metadata } from 'next';
-
-// Although this is a client component, Next.js can still extract metadata
-export const metadata: Metadata = {
-  title: 'Configuraciones',
-  description: 'Gestiona tu perfil, direcciones, y preferencias de apariencia de la aplicación.',
-};
-
 
 const themes = [
     { id: 'light', label: 'Claro', bg: 'hsl(220 17% 96%)', primary: 'hsl(217 91% 60%)', accent: 'hsl(49 97% 53%)' },
