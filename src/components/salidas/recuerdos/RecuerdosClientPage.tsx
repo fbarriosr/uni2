@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
 import { auth, db, storage } from '@/lib/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
@@ -26,6 +26,7 @@ interface SalidaData {
     from: Date;
     to: Date | null;
   };
+  evaluationSubmitted?: boolean;
 }
 
 interface Recuerdo {
@@ -129,6 +130,7 @@ export default function RecuerdosClientPage({ salidaId }: { salidaId: string }) 
               from: (data.dateRange.from as Timestamp).toDate(),
               to: data.dateRange.to ? (data.dateRange.to as Timestamp).toDate() : null,
             },
+             evaluationSubmitted: data.evaluationSubmitted || false
           });
           await fetchRecuerdos();
         } else {
@@ -222,6 +224,14 @@ export default function RecuerdosClientPage({ salidaId }: { salidaId: string }) 
       'video/*': ['.mp4', '.mov', '.avi']
     }
   });
+  
+  const currentJourneyStep = useMemo(() => {
+    if (!salidaData) return 1;
+    if (salidaData.evaluationSubmitted) return 7; // Completed
+    if (recuerdos.length > 0) return 5;
+    return 5;
+  }, [salidaData, recuerdos]);
+
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
@@ -240,7 +250,7 @@ export default function RecuerdosClientPage({ salidaId }: { salidaId: string }) 
           subtitle={formattedDate}
           salidaId={salidaId}
           userId={user?.uid || null}
-          currentStep={5}
+          currentStep={currentJourneyStep}
         />
 
         <Card className="w-full">

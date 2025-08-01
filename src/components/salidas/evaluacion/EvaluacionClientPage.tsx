@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useActionState } from 'react';
+import { useState, useEffect, useActionState, useMemo } from 'react';
 import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { doc, getDoc, Timestamp } from 'firebase/firestore';
@@ -147,6 +147,12 @@ export default function EvaluacionClientPage({ salidaId }: { salidaId: string })
     }));
   };
 
+  const currentJourneyStep = useMemo(() => {
+    if (!salidaData) return 1;
+    if (salidaData.evaluationSubmitted) return 7; // Completed
+    return 6;
+  }, [salidaData]);
+
   if (loading) {
     return <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
   }
@@ -163,7 +169,7 @@ export default function EvaluacionClientPage({ salidaId }: { salidaId: string })
         subtitle={formattedDate}
         salidaId={salidaId}
         userId={user?.uid || null}
-        currentStep={6}
+        currentStep={currentJourneyStep}
       />
 
       <form action={formAction}>
@@ -176,44 +182,52 @@ export default function EvaluacionClientPage({ salidaId }: { salidaId: string })
           <div>
               <h2 className="text-2xl font-headline text-primary mb-4">Actividades Realizadas</h2>
               <div className="space-y-6">
-                  {activitiesToEvaluate.map(activity => (
-                      <ActivityEvaluationCard 
-                        key={activity.id} 
-                        activity={activity}
-                        parentRating={activityEvals[activity.id]?.parentRating || 0}
-                        onParentRatingChange={(r) => handleActivityEvalChange(activity.id, 'parentRating', r)}
-                        childRating={activityEvals[activity.id]?.childRating || 0}
-                        onChildRatingChange={(r) => handleActivityEvalChange(activity.id, 'childRating', r)}
-                        comment={activityEvals[activity.id]?.comment || ''}
-                        onCommentChange={(c) => handleActivityEvalChange(activity.id, 'comment', c)}
-                        disabled={viewMode || isPending}
-                        userRole={userRole}
-                      />
-                  ))}
+                  {activitiesToEvaluate.length > 0 ? (
+                    activitiesToEvaluate.map(activity => (
+                        <ActivityEvaluationCard 
+                          key={activity.id} 
+                          activity={activity}
+                          parentRating={activityEvals[activity.id]?.parentRating || 0}
+                          onParentRatingChange={(r) => handleActivityEvalChange(activity.id, 'parentRating', r)}
+                          childRating={activityEvals[activity.id]?.childRating || 0}
+                          onChildRatingChange={(r) => handleActivityEvalChange(activity.id, 'childRating', r)}
+                          comment={activityEvals[activity.id]?.comment || ''}
+                          onCommentChange={(c) => handleActivityEvalChange(activity.id, 'comment', c)}
+                          disabled={viewMode || isPending}
+                          userRole={userRole}
+                        />
+                    ))
+                  ) : (
+                    <p className="text-center text-muted-foreground bg-muted p-8 rounded-lg">No hay actividades confirmadas y pagadas para evaluar en esta salida.</p>
+                  )}
               </div>
           </div>
 
-          <div>
-              <h2 className="text-2xl font-headline text-primary mb-4">Evaluación General de la Salida</h2>
-              <OverallEvaluationCard 
-                overallRating={overallEval.overallRating}
-                onOverallRatingChange={(r) => handleOverallEvalChange('overallRating', r)}
-                bestMoment={overallEval.bestMoment}
-                onBestMomentChange={(c) => handleOverallEvalChange('bestMoment', c)}
-                generalComment={overallEval.generalComment}
-                onGeneralCommentChange={(c) => handleOverallEvalChange('generalComment', c)}
-                disabled={viewMode || isPending}
-                userRole={userRole}
-              />
-          </div>
+          {activitiesToEvaluate.length > 0 && (
+            <div>
+                <h2 className="text-2xl font-headline text-primary mb-4">Evaluación General de la Salida</h2>
+                <OverallEvaluationCard 
+                  overallRating={overallEval.overallRating}
+                  onOverallRatingChange={(r) => handleOverallEvalChange('overallRating', r)}
+                  bestMoment={overallEval.bestMoment}
+                  onBestMomentChange={(c) => handleOverallEvalChange('bestMoment', c)}
+                  generalComment={overallEval.generalComment}
+                  onGeneralCommentChange={(c) => handleOverallEvalChange('generalComment', c)}
+                  disabled={viewMode || isPending}
+                  userRole={userRole}
+                />
+            </div>
+          )}
         </div>
         
-        <div className="mt-12 flex justify-center">
-          <Button size="lg" type="submit" disabled={viewMode || isPending}>
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {viewMode ? <><CheckCircle className="mr-2 h-4 w-4" />Evaluación Enviada</> : 'Enviar Evaluación'}
-          </Button>
-        </div>
+        {activitiesToEvaluate.length > 0 && (
+          <div className="mt-12 flex justify-center">
+            <Button size="lg" type="submit" disabled={viewMode || isPending}>
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {viewMode ? <><CheckCircle className="mr-2 h-4 w-4" />Evaluación Enviada</> : 'Enviar Evaluación'}
+            </Button>
+          </div>
+        )}
       </form>
     </div>
   );

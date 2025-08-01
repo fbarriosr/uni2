@@ -20,10 +20,6 @@ export default async function EvaluacionPage({ params }: EvaluacionPageProps) {
     notFound();
   }
   
-  // Here we would fetch the list of confirmed and paid activities for this outing
-  // to pass down to the client component for evaluation.
-  // For now, we will mock this inside the client component.
-
   return (
     <AuthCheck>
       <Suspense fallback={<EvaluacionPageLoading />}>

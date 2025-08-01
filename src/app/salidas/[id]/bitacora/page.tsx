@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, use, ChangeEvent } from 'react';
+import { useState, useEffect, useCallback, use, useMemo } from 'react';
 import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { format } from 'date-fns';
@@ -19,7 +19,6 @@ import TimelineEvent from '@/components/salidas/bitacora/TimelineEvent';
 import type { BitacoraEvent } from '@/lib/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 
@@ -33,6 +32,7 @@ interface SalidaData {
     from: Date;
     to: Date | null;
   };
+  evaluationSubmitted?: boolean;
 }
 
 function BitacoraPageContent({ params }: BitacoraPageProps) {
@@ -70,7 +70,8 @@ function BitacoraPageContent({ params }: BitacoraPageProps) {
     if (data) {
       setSalidaData({
         id: data.id,
-        dateRange: { from: data.dateRange.from, to: data.dateRange.to || data.dateRange.from }
+        dateRange: { from: data.dateRange.from, to: data.dateRange.to || data.dateRange.from },
+        evaluationSubmitted: data.evaluationSubmitted
       });
       const events = await getBitacoraEvents(salidaId, userId);
       setBitacoraEvents(events);
@@ -125,6 +126,14 @@ function BitacoraPageContent({ params }: BitacoraPageProps) {
     setIsSubmitting(false);
   }
 
+  const currentJourneyStep = useMemo(() => {
+    if (!salidaData) return 1;
+    if (salidaData.evaluationSubmitted) return 7; // Completed
+    if (bitacoraEvents.length > 0) return 4;
+    return 4; // Default to this step if no other conditions are met on this page
+  }, [salidaData, bitacoraEvents]);
+
+
   if (loading) {
     return <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
   }
@@ -150,7 +159,7 @@ function BitacoraPageContent({ params }: BitacoraPageProps) {
         subtitle={formattedDate}
         salidaId={salidaId}
         userId={user?.uid || null}
-        currentStep={4}
+        currentStep={currentJourneyStep}
       />
       
       <main className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -244,7 +253,7 @@ function BitacoraPageContent({ params }: BitacoraPageProps) {
                     </Button>
                 </div>
             )}
-             <Textarea
+            <Textarea
                 placeholder="Añade un comentario a tu foto (opcional)..."
                 value={photoComment}
                 onChange={(e) => setPhotoComment(e.target.value)}

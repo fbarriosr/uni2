@@ -1,6 +1,5 @@
 
-
-import { getActivities, getUserById } from '@/lib/data';
+import { getActivities } from '@/lib/data';
 import AuthCheck from '@/components/AuthCheck';
 import SalidaDetailClientPage from '@/components/salidas/SalidaDetailClientPage';
 import { notFound } from 'next/navigation';
@@ -34,7 +33,7 @@ function SalidaDetailLoading() {
 
 // This is now a Server Component
 export default async function SalidaDetailPage({ params }: SalidaDetailPageProps) {
-  const { id: salidaId } = await params;
+  const { id: salidaId } = params;
 
   if (!salidaId) {
     notFound();
