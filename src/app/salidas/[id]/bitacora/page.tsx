@@ -6,14 +6,14 @@ import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Loader2, Camera, MessageSquare, Mic, MapPin, X } from 'lucide-react';
+import { Loader2, Camera, MessageSquare, Mic, MapPin, X, UploadCloud } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 
 import AuthCheck from '@/components/AuthCheck';
 import SalidaPageHeader from '@/components/salidas/SalidaPageHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getSalidaById, getBitacoraEvents, addBitacoraEventAction } from '@/lib/actions/salidaActions';
+import { addBitacoraEventAction, getBitacoraEvents, getSalidaById } from '@/lib/actions/salidaActions';
 import Link from 'next/link';
 import TimelineEvent from '@/components/salidas/bitacora/TimelineEvent';
 import type { BitacoraEvent } from '@/lib/types';
