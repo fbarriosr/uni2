@@ -175,11 +175,13 @@ export default function CalendarDisplay({
                     row: "flex w-full mt-2",
                     cell: "text-center p-0 relative aspect-square flex-1",
                     day: "h-full w-full p-0 font-normal text-sm aria-selected:opacity-100 hover:bg-accent/20 rounded-md transition-colors flex items-center justify-center",
-                    day_selected: "bg-transparent", // Handled by DayContent
+                    day_selected: "bg-red-600 text-white rounded-l-md hover:bg-red-700 hover:text-white", // Handled by DayContent
                     day_outside: "text-muted-foreground/50",
                     day_disabled: "text-muted-foreground/30",
-                    day_range_start: "day-range-start",
-                    day_range_end: "day-range-end",
+                    day_range_start:
+                      "day-range-start bg-red-600 text-white rounded-l-md hover:bg-red-700 hover:text-white",
+                    day_range_end:
+                      "day-range-end bg-red-600 text-white rounded-r-md hover:bg-red-700 hover:text-white",
                     day_range_middle: "aria-selected:bg-primary/20 aria-selected:text-foreground",
                 }}
                 components={{
