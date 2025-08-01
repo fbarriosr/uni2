@@ -9,7 +9,7 @@ import { AppRoutes } from '@/lib/urls';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const journeySteps = [
-  { name: 'Exploración', icon: Compass, href: (id: string) => AppRoutes.salidas.detail(id) },
+  { name: 'Sugerencias', icon: Compass, href: (id: string) => AppRoutes.salidas.detail(id) },
   { name: 'Match', icon: ThumbsUp, href: (id: string) => AppRoutes.salidas.match(id) },
   { name: 'Itinerario', icon: CalendarDays, href: (id: string) => AppRoutes.salidas.itinerario(id) },
   { name: 'Bitácora', icon: BookHeart, href: (id: string) => AppRoutes.salidas.bitacora(id) },
