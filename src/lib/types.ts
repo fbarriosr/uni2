@@ -1,5 +1,4 @@
 
-
 export type ActivityCategory = "Solo para ustedes" | "Ideas rápidas" | "Libre y gratuito";
 export type ActivityStatus = 'borrador' | 'pendiente_revision' | 'publicada' | 'deshabilitada';
 
@@ -102,6 +101,22 @@ export interface User {
 }
 
 // User Outings Type
+export type SalidaStatus = 'planificada' | 'en_curso' | 'completada' | 'cancelada';
+
+export type BitacoraEventType = 'inicio' | 'fin' | 'comentario' | 'foto';
+
+export interface BitacoraEvent {
+    id: string;
+    timestamp: string; // ISO String
+    type: BitacoraEventType;
+    text?: string;
+    imageUrl?: string;
+    location?: {
+        latitude: number;
+        longitude: number;
+    };
+}
+
 export interface UserOuting {
   id: string;
   userId: string;
@@ -110,9 +125,12 @@ export interface UserOuting {
   activityLocation: string;
   activityImage?: string; // Main image of the activity
   outingDate: string; // Changed to string
-  status: 'scheduled' | 'completed' | 'cancelled';
+  status: SalidaStatus; // Changed from 'scheduled' | 'completed' | 'cancelled'
   createdAt: string; // Changed to string
   evaluationSubmitted?: boolean;
+  bitacora?: BitacoraEvent[];
+  ubicacionInicio?: { latitude: number; longitude: number } | null;
+  ubicacionFin?: { latitude: number; longitude: number } | null;
 }
 
 export interface Coupon {

@@ -1,3 +1,4 @@
+
 // src/lib/urls.ts
 
 export const AppRoutes = {
@@ -23,6 +24,7 @@ export const AppRoutes = {
     itinerario: (id: string) => `/salidas/${id}/itinerario`,
     recuerdos: (id: string) => `/salidas/${id}/recuerdos`,
     evaluacion: (id: string) => `/salidas/${id}/evaluacion`,
+    bitacora: (id: string) => `/salidas/${id}/bitacora`,
   },
   admin: {
     dashboard: '/admin',

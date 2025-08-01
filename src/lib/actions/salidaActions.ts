@@ -1,5 +1,4 @@
 
-
 'use server';
 
 import { z } from 'zod';
@@ -81,6 +80,10 @@ export async function saveSalidaPreferences(
       otherPreference: otherPreference || null,
       createdAt: serverTimestamp(),
       isPublic: false, // Initialize sharing as false
+      status: 'planificada', // New status field
+      bitacora: [], // New logbook field
+      ubicacionInicio: null, // New start location field
+      ubicacionFin: null, // New end location field
     });
 
     revalidatePath('/nueva_salida');

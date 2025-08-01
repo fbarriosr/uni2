@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import Link from 'next/link';
-import { Compass, Lightbulb, ThumbsUp, CalendarDays, Camera, Star } from 'lucide-react';
+import { Compass, Lightbulb, ThumbsUp, CalendarDays, BookHeart, Camera, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AppRoutes } from '@/lib/urls';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -13,6 +13,7 @@ const journeySteps = [
   { name: 'Ideas', icon: Lightbulb, href: (id: string) => AppRoutes.salidas.detail(id) },
   { name: 'Match', icon: ThumbsUp, href: (id: string) => AppRoutes.salidas.match(id) },
   { name: 'Itinerario', icon: CalendarDays, href: (id: string) => AppRoutes.salidas.itinerario(id) },
+  { name: 'Bitácora', icon: BookHeart, href: (id: string) => AppRoutes.salidas.bitacora(id) },
   { name: 'Recuerdos', icon: Camera, href: (id: string) => AppRoutes.salidas.recuerdos(id) },
   { name: 'Evaluación', icon: Star, href: (id: string) => AppRoutes.salidas.evaluacion(id) },
 ];
