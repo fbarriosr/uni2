@@ -48,10 +48,12 @@ function Calendar({
           buttonVariants({ variant: "ghost" }),
           "h-8 w-8 p-0 font-normal aria-selected:opacity-100"
         ),
-        day_range_start: "day-range-start",
-        day_range_end: "day-range-end",
+        day_range_start:
+          "day-range-start bg-red-600 text-white rounded-l-md hover:bg-red-700 hover:text-white",
+        day_range_end:
+          "day-range-end bg-red-600 text-white rounded-r-md hover:bg-red-700 hover:text-white",
         day_selected:
-          "bg-slate-900 text-slate-50 hover:bg-slate-900 hover:text-slate-50 focus:bg-slate-900 focus:text-slate-50 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50 dark:hover:text-slate-900 dark:focus:bg-slate-50 dark:focus:text-slate-900",
+          "bg-blue-500 text-slate-50 hover:bg-slate-900 hover:text-slate-50 focus:bg-slate-900 focus:text-slate-50 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50 dark:hover:text-slate-900 dark:focus:bg-slate-50 dark:focus:text-slate-900",
         day_today: "bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-50",
         day_outside: "text-slate-500 opacity-0 aria-selected:bg-slate-100/50 aria-selected:text-slate-500 aria-selected:opacity-30 dark:text-slate-400 dark:aria-selected:bg-slate-800/50 dark:aria-selected:text-slate-400",
         day_disabled: "text-slate-500 opacity-50 dark:text-slate-400",
