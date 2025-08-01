@@ -103,7 +103,7 @@ export interface User {
 // User Outings Type
 export type SalidaStatus = 'planificada' | 'en_curso' | 'completada' | 'cancelada';
 
-export type BitacoraEventType = 'inicio' | 'fin' | 'comentario' | 'foto';
+export type BitacoraEventType = 'inicio' | 'fin' | 'comentario' | 'foto' | 'audio';
 
 export interface BitacoraEvent {
     id: string;

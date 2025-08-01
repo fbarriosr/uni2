@@ -2,12 +2,13 @@
 'use server';
 
 import { z } from 'zod';
-import { db } from '@/lib/firebase';
+import { db, storage } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc, updateDoc, getDoc, getDocs, writeBatch, query, orderBy, deleteDoc, where, Timestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { AppRoutes } from '@/lib/urls';
-import type { ActivityRequestStatus, ItineraryEvent, Activity, FullEvaluation, User } from '@/lib/types';
+import type { ActivityRequestStatus, ItineraryEvent, Activity, FullEvaluation, User, BitacoraEvent, BitacoraEventType } from '@/lib/types';
 import { getUserById, getUsersByIds } from '@/lib/data';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -485,4 +486,77 @@ export async function getEvaluation(salidaId: string, userId: string): Promise<F
         console.error("Error fetching evaluation:", error);
         return null;
     }
+}
+
+// --- Bitacora Actions ---
+
+export async function getBitacoraEvents(salidaId: string, userId: string): Promise<BitacoraEvent[]> {
+  if (!userId || !salidaId) return [];
+  try {
+    const user = await getUserById(userId);
+    if (!user) return [];
+    const familyHeadUid = user.role === 'hijo' && user.parentUid ? user.parentUid : userId;
+
+    const eventsRef = collection(db, 'users', familyHeadUid, 'salidas', salidaId, 'bitacora');
+    const q = query(eventsRef, orderBy('timestamp', 'asc'));
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map(docSnap => {
+        const data = docSnap.data();
+        return {
+            id: docSnap.id,
+            ...data,
+            timestamp: (data.timestamp as Timestamp).toDate().toISOString()
+        } as BitacoraEvent;
+    });
+
+  } catch (error) {
+    console.error('Error fetching bitacora events:', error);
+    return [];
+  }
+}
+
+export async function addBitacoraEventAction(formData: FormData): Promise<{success: boolean; message: string;}> {
+  const userId = formData.get('userId') as string;
+  const salidaId = formData.get('salidaId') as string;
+  const type = formData.get('type') as BitacoraEventType;
+  const text = formData.get('text') as string | null;
+  const file = formData.get('file') as File | null;
+
+  if (!userId || !salidaId || !type) {
+    return { success: false, message: 'Faltan datos para añadir el evento.' };
+  }
+  
+  try {
+    const user = await getUserById(userId);
+    if (!user) return { success: false, message: 'Usuario no encontrado.' };
+    const familyHeadUid = user.role === 'hijo' && user.parentUid ? user.parentUid : userId;
+
+    const newEvent: Partial<BitacoraEvent> = {
+      type,
+      text: text || '',
+      timestamp: new Date().toISOString(),
+    };
+    
+    if (file && file.size > 0) {
+        const storagePath = `recuerdos/${salidaId}/bitacora/${Date.now()}_${file.name}`;
+        const storageRef = ref(storage, storagePath);
+        await uploadBytes(storageRef, file);
+        newEvent.imageUrl = await getDownloadURL(storageRef);
+    }
+    
+    // Add to Firestore
+    const eventsRef = collection(db, 'users', familyHeadUid, 'salidas', salidaId, 'bitacora');
+    await addDoc(eventsRef, {
+        ...newEvent,
+        timestamp: serverTimestamp(),
+    });
+
+    revalidatePath(AppRoutes.salidas.bitacora(salidaId));
+    return { success: true, message: 'Evento añadido a la bitácora.' };
+    
+  } catch (error) {
+    console.error('Error adding bitacora event:', error);
+    return { success: false, message: 'Error del servidor al añadir el evento.' };
+  }
 }
