@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, use } from 'react';
 import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { format } from 'date-fns';
@@ -17,7 +17,7 @@ import { getSalidaById } from '@/lib/actions/salidaActions';
 import Link from 'next/link';
 
 interface BitacoraPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 interface SalidaData {
@@ -28,7 +28,8 @@ interface SalidaData {
   };
 }
 
-function BitacoraPageContent({ params }: BitacoraPageProps) {
+function BitacoraPageContent({ params: paramsPromise }: BitacoraPageProps) {
+  const params = use(paramsPromise);
   const { id: salidaId } = params;
   const [salidaData, setSalidaData] = useState<SalidaData | null>(null);
   const [loading, setLoading] = useState(true);
