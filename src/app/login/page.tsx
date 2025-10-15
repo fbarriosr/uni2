@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -27,6 +26,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Por favor, introduce un correo electrónico válido.' }),
@@ -227,9 +228,18 @@ export default function LoginPage() {
           </form>
           <div className="mt-4 text-center text-sm">
             ¿No tienes una cuenta?{" "}
-            <Link href={AppRoutes.register} className="underline">
-              Regístrate
-            </Link>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                   <span tabIndex={0}> {/* A span is needed to wrap the disabled button for Tooltip to work */}
+                    <Button variant="link" disabled className="p-0 h-auto text-sm">Próximamente</Button>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="max-w-xs text-center">Estamos en fase de pruebas. Puedes conseguir una invitación con los fundadores o pide acceso a una demo: +56 976340532 whatsapp de Fran.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </div>

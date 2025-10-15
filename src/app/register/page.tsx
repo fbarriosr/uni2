@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -9,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useState, ChangeEvent } from 'react';
-import { UserPlus, Loader2 } from 'lucide-react';
+import { UserPlus, Loader2, Info } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -17,6 +16,7 @@ import { auth } from '@/lib/firebase';
 import { createUserWithEmailAndPassword, type AuthError } from 'firebase/auth';
 import { finalizeRegistration } from '@/lib/actions/userActions';
 import { AppRoutes } from '@/lib/urls';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const registerSchema = z.object({
   name: z.string().min(1, { message: 'El nombre es obligatorio.' }),
@@ -65,65 +65,16 @@ export default function RegisterPage() {
   };
 
   const onSubmit = async (data: RegisterFormValues) => {
-    setIsLoading(true);
-    try {
-      // Step 1: Create user in Firebase Authentication on the client
-      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      const user = userCredential.user;
-
-      // Step 2: Call server action to finalize registration in Firestore
-      const formData = new FormData();
-      formData.append('uid', user.uid);
-      formData.append('email', user.email!);
-      formData.append('name', data.name);
-      if (data.nickname) formData.append('nickname', data.nickname);
-      if (avatarFile) formData.append('avatar', avatarFile);
-
-      const result = await finalizeRegistration(formData);
-
-      if (result.success) {
-        toast({
-          title: '¡Registro Exitoso!',
-          description: result.message || `Bienvenido, ${data.name}. Ahora puedes iniciar sesión.`,
-        });
-        router.push('/login');
-      } else {
-        throw new Error(result.message || 'Error al guardar los datos del usuario.');
-      }
-
-    } catch (error) {
-      let errorMessage = 'Ocurrió un error inesperado durante el registro.';
-      if (error instanceof Error) {
-        if ('code' in error) {
-          const authError = error as AuthError;
-          switch (authError.code) {
-            case 'auth/email-already-in-use':
-              errorMessage = 'Este correo electrónico ya está en uso.';
-              break;
-            case 'auth/invalid-email':
-              errorMessage = 'El formato del correo electrónico no es válido.';
-              break;
-            case 'auth/weak-password':
-              errorMessage = 'La contraseña es demasiado débil.';
-              break;
-            default:
-              errorMessage = `Error: ${authError.message}`;
-          }
-        } else {
-            errorMessage = error.message;
-        }
-      }
-
-      console.error('Registration error:', error);
-      toast({
-        title: 'Error de Registro',
-        description: errorMessage,
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    // This logic is now disabled as per the new requirements.
+    // The button is disabled, so this function should not be called.
+    toast({
+      title: 'Registro Deshabilitado',
+      description: 'El registro de nuevas cuentas está en pausa.',
+      variant: 'destructive',
+    });
   };
+
+  const isRegistrationDisabled = true;
 
   return (
     <div className="w-full h-full lg:grid lg:grid-cols-2">
@@ -135,6 +86,17 @@ export default function RegisterPage() {
               Ingresa tus datos para empezar a crear recuerdos.
             </p>
           </div>
+
+          {isRegistrationDisabled && (
+            <Alert variant="default" className="bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-950/50 dark:border-blue-800 dark:text-blue-300">
+                <Info className="h-4 w-4 !text-blue-600 dark:!text-blue-400" />
+                <AlertTitle className="font-semibold">Registro por Invitación</AlertTitle>
+                <AlertDescription className="text-xs">
+                    Estamos en una fase de pruebas. El registro está disponible solo a través de una invitación o pidiendo acceso a una demo con Fran al +56 976340532.
+                </AlertDescription>
+            </Alert>
+          )}
+
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
              <div className="grid gap-2">
               <Label htmlFor="name">Nombre</Label>
@@ -143,7 +105,7 @@ export default function RegisterPage() {
                 type="text"
                 placeholder="Tu nombre"
                 {...form.register('name')}
-                disabled={isLoading}
+                disabled={isRegistrationDisabled}
               />
               {form.formState.errors.name && (
                 <p className="text-sm text-destructive mt-1">
@@ -158,7 +120,7 @@ export default function RegisterPage() {
                 type="email"
                 placeholder="tu@correo.com"
                 {...form.register('email')}
-                disabled={isLoading}
+                disabled={isRegistrationDisabled}
               />
               {form.formState.errors.email && (
                 <p className="text-sm text-destructive mt-1">
@@ -169,7 +131,7 @@ export default function RegisterPage() {
             <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                     <Label htmlFor="password">Contraseña</Label>
-                    <Input id="password" type="password" {...form.register('password')} disabled={isLoading} />
+                    <Input id="password" type="password" {...form.register('password')} disabled={isRegistrationDisabled} />
                     {form.formState.errors.password && (
                         <p className="text-sm text-destructive mt-1">
                         {form.formState.errors.password.message}
@@ -178,7 +140,7 @@ export default function RegisterPage() {
                 </div>
                  <div className="grid gap-2">
                     <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
-                    <Input id="confirmPassword" type="password" {...form.register('confirmPassword')} disabled={isLoading} />
+                    <Input id="confirmPassword" type="password" {...form.register('confirmPassword')} disabled={isRegistrationDisabled} />
                      {form.formState.errors.confirmPassword && (
                         <p className="text-sm text-destructive mt-1">
                         {form.formState.errors.confirmPassword.message}
@@ -186,7 +148,7 @@ export default function RegisterPage() {
                     )}
                 </div>
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full" disabled={isRegistrationDisabled}>
               {isLoading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
