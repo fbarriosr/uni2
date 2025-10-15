@@ -1,4 +1,3 @@
-
 // src/lib/urls.ts
 
 export const AppRoutes = {
@@ -28,6 +27,9 @@ export const AppRoutes = {
   },
   admin: {
     dashboard: '/admin',
+    users: '/admin/users',
+    newUser: '/admin/users/new',
+    editUser: (id: string) => `/admin/users/edit/${id}`,
     activities: '/admin/activities',
     newActivity: '/admin/activities/new',
     editActivity: (id: string) => `/admin/activities/edit/${id}`,

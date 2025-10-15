@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -8,6 +7,12 @@ import { ArrowRight, Activity, Ticket, User, ClipboardList, BookOpen, Graduation
 import { AppRoutes } from '@/lib/urls';
 
 const adminSections = [
+  {
+    title: 'Gestión de Usuarios',
+    description: 'Crea, edita y administra los usuarios de la aplicación.',
+    href: AppRoutes.admin.users,
+    icon: User,
+  },
   {
     title: 'Gestión de Actividades',
     description: 'Crea, edita y publica las actividades disponibles en la plataforma.',
