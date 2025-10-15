@@ -74,7 +74,7 @@ export default function Navbar({
             </Button>
           )}
           <Link href={user ? "/inicio" : "/"} className="flex items-center gap-2 text-xl font-headline text-primary hover:opacity-80 transition-opacity">
-            <Image src="https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Ficono.png?alt=media&token=01da1e37-9b0d-4da7-b6c2-ae3803cdcbcc" alt="UNI2 Logo" width={40} height={40} />
+            <Image src="https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Ficono.png?alt=media&token=01da1e37-9b0d-4da7-b6c2-ae3803cdcbcc" alt="UNI2 Logo" width={64} height={64} />
           </Link>
         </div>
         
