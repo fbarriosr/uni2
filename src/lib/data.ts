@@ -305,9 +305,32 @@ const usersCollectionRef = collection(db, 'users');
 export async function getUsers(): Promise<User[]> {
   try {
     const querySnapshot = await getDocs(usersCollectionRef);
-    return querySnapshot.docs.map(docSnap => serializeData(docSnap) as User);
+    const allUsers = querySnapshot.docs.map(docSnap => serializeData(docSnap) as User);
+
+    const userMap = new Map<string, User>();
+    allUsers.forEach(user => userMap.set(user.id, { ...user, members: [] }));
+
+    const familyHeads: User[] = [];
+
+    allUsers.forEach(user => {
+        if (user.parentUid && userMap.has(user.parentUid)) {
+            const parent = userMap.get(user.parentUid);
+            if (parent) {
+                parent.members?.push(user);
+            }
+        }
+    });
+
+    userMap.forEach(user => {
+      // Add users who are not children of anyone to the root list
+      if (!user.parentUid) {
+        familyHeads.push(user);
+      }
+    });
+
+    return familyHeads;
   } catch (error) {
-    console.error("Error fetching users: ", error);
+    console.error("Error fetching and grouping users: ", error);
     return [];
   }
 }

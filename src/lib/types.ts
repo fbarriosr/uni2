@@ -98,6 +98,7 @@ export interface User {
   addresses?: Address[];
   activeAddressId?: string | null;
   isAdmin?: boolean;
+  members?: User[]; // For grouping families in admin view
 }
 
 // User Outings Type
