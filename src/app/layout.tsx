@@ -12,6 +12,13 @@ export const metadata: Metadata = {
   icons: {
     icon: 'https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Fic_launcher.png?alt=media&token=4a958c34-b6af-4182-b273-69aee71f42f7',
   },
+  openGraph: {
+    images: [
+      {
+        url: 'https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Fimagen-thumbnail.jpg?alt=media&token=b11a3d10-ee60-4790-b8a2-aa6d0ab8c832',
+      },
+    ],
+  },
 };
 
 
