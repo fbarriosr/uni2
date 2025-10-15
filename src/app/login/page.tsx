@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
-import { LogIn, Loader2, KeyRound, Mail } from 'lucide-react';
+import { LogIn, Loader2, KeyRound, Mail, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -228,18 +228,15 @@ export default function LoginPage() {
           </form>
           <div className="mt-4 text-center text-sm">
             ¿No tienes una cuenta?{" "}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                   <span tabIndex={0}> {/* A span is needed to wrap the disabled button for Tooltip to work */}
-                    <Button variant="link" disabled className="p-0 h-auto text-sm">Próximamente</Button>
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-xs text-center">Estamos en fase de pruebas. Puedes conseguir una invitación con los fundadores o pide acceso a una demo: +56 976340532 whatsapp de Fran.</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <a
+                href="https://wa.me/56976340532?text=Hola%2C%20quisiera%20una%20invitaci%C3%B3n%20para%20probar%20la%20app%20UNI2."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-primary underline-offset-4 hover:underline"
+            >
+                Solicita una invitación por WhatsApp
+                <ExternalLink className="ml-1 h-3 w-3" />
+            </a>
           </div>
         </div>
       </div>
