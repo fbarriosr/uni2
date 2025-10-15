@@ -117,34 +117,36 @@ export default function UsersClientPage({ initialUsers }: UsersClientPageProps) 
           filteredFamilies.map((family) => (
             <AccordionItem key={family.id} value={family.id} className="border-b-0">
                 <Card className="overflow-hidden">
-                    <AccordionTrigger className="p-0 hover:no-underline">
-                        <div className="flex items-center gap-4 p-4 w-full">
-                             <Avatar className="h-16 w-16">
-                                <AvatarImage src={family.avatarUrl} alt={family.name || 'Avatar'} />
-                                <AvatarFallback><UserIcon size={24} /></AvatarFallback>
-                            </Avatar>
-                            <div className='flex-grow overflow-hidden text-left'>
-                               <p className="text-lg font-bold leading-tight truncate">{family.name || 'Sin Nombre'}</p>
-                               <p className="text-sm text-muted-foreground truncate">{family.email}</p>
-                            </div>
-                            <div className="flex items-center gap-4 ml-auto">
-                                <Badge variant={family.role === 'admin' ? 'destructive' : 'default'} className="hidden sm:inline-flex">
-                                    <Users className="mr-1.5 h-3 w-3" />
-                                    Familia de {family.members?.length || 0}
-                                </Badge>
-                                 <div className="flex items-center gap-1">
-                                    <Button variant="ghost" size="sm" asChild onClick={(e) => e.stopPropagation()}>
-                                        <Link href={AppRoutes.admin.editUser(family.id)}>
-                                            <Edit className="mr-1.5 h-3 w-3" />
-                                            Editar
-                                        </Link>
-                                    </Button>
-                                    <DeleteUserButton userId={family.id} userName={family.name || family.email || 'usuario'} />
+                    <div className="flex items-center p-4 w-full">
+                        <AccordionTrigger className="p-0 hover:no-underline flex-grow">
+                            <div className="flex items-center gap-4 text-left">
+                                <Avatar className="h-16 w-16">
+                                    <AvatarImage src={family.avatarUrl} alt={family.name || 'Avatar'} />
+                                    <AvatarFallback><UserIcon size={24} /></AvatarFallback>
+                                </Avatar>
+                                <div className='flex-grow overflow-hidden'>
+                                    <p className="text-lg font-bold leading-tight truncate">{family.name || 'Sin Nombre'}</p>
+                                    <p className="text-sm text-muted-foreground truncate">{family.email}</p>
                                 </div>
-                                <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform duration-200")} />
                             </div>
+                        </AccordionTrigger>
+                        <div className="flex items-center gap-4 ml-auto pl-4">
+                            <Badge variant={family.role === 'admin' ? 'destructive' : 'default'} className="hidden sm:inline-flex">
+                                <Users className="mr-1.5 h-3 w-3" />
+                                Familia de {family.members?.length || 0}
+                            </Badge>
+                             <div className="flex items-center gap-1">
+                                <Button variant="ghost" size="sm" asChild>
+                                    <Link href={AppRoutes.admin.editUser(family.id)}>
+                                        <Edit className="mr-1.5 h-3 w-3" />
+                                        Editar
+                                    </Link>
+                                </Button>
+                                <DeleteUserButton userId={family.id} userName={family.name || family.email || 'usuario'} />
+                            </div>
+                            {/* The Chevron is part of the AccordionTrigger, so we don't need an extra one */}
                         </div>
-                    </AccordionTrigger>
+                    </div>
                     <AccordionContent className={cn("bg-muted/50", (family.members?.length || 0) === 0 && 'py-0')}>
                         {(family.members?.length || 0) > 0 ? (
                             <div className="p-4 space-y-3">
