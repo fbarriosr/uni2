@@ -14,6 +14,7 @@ import { AppRoutes } from '@/lib/urls';
 import { cn } from '@/lib/utils';
 import { Separator } from './ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
+import Image from 'next/image';
 
 
 interface NavbarProps {
@@ -72,8 +73,9 @@ export default function Navbar({
               <Menu />
             </Button>
           )}
-          <Link href={user ? "/inicio" : "/"} className="text-xl font-headline text-primary hover:opacity-80 transition-opacity">
-            UNI2
+          <Link href={user ? "/inicio" : "/"} className="flex items-center gap-2 text-xl font-headline text-primary hover:opacity-80 transition-opacity">
+            <Image src="https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Ficono.png?alt=media&token=01da1e37-9b0d-4da7-b6c2-ae3803cdcbcc" alt="UNI2 Logo" width={32} height={32} />
+            <span>UNI2</span>
           </Link>
         </div>
         

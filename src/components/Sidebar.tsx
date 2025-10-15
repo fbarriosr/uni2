@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { Settings, Users, Shield, Home, X } from 'lucide-react';
 import type { User as AppUser } from '@/lib/types';
 import { AppRoutes } from '@/lib/urls';
+import Image from 'next/image';
 
 
 interface SidebarProps {
@@ -53,8 +54,9 @@ export default function Sidebar({ isOpen, user, onClose }: SidebarProps) {
         isOpen ? "translate-x-0" : "-translate-x-full"
     )}>
        <div className={cn("flex items-center justify-between h-[var(--header-height)] px-4 w-full")}>
-          <Link href={user ? "/inicio" : "/"} className="text-xl font-headline text-primary hover:opacity-80 transition-opacity whitespace-nowrap overflow-hidden">
-            UNI2
+          <Link href={user ? "/inicio" : "/"} className="flex items-center gap-2 text-xl font-headline text-primary hover:opacity-80 transition-opacity whitespace-nowrap overflow-hidden">
+             <Image src="https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Ficono.png?alt=media&token=01da1e37-9b0d-4da7-b6c2-ae3803cdcbcc" alt="UNI2 Logo" width={32} height={32} />
+            <span>UNI2</span>
           </Link>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-5 w-5" />
