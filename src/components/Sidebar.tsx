@@ -56,7 +56,6 @@ export default function Sidebar({ isOpen, user, onClose }: SidebarProps) {
        <div className={cn("flex items-center justify-between h-[var(--header-height)] px-4 w-full")}>
           <Link href={user ? "/inicio" : "/"} className="flex items-center gap-2 text-xl font-headline text-primary hover:opacity-80 transition-opacity whitespace-nowrap overflow-hidden">
              <Image src="https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Ficono.png?alt=media&token=01da1e37-9b0d-4da7-b6c2-ae3803cdcbcc" alt="UNI2 Logo" width={32} height={32} />
-            <span>UNI2</span>
           </Link>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-5 w-5" />
