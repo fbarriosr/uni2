@@ -9,6 +9,9 @@ export const metadata: Metadata = {
     default: 'Fines de Semana en Familia Primero',
   },
   description: 'Planifica actividades y fortalece vínculos familiares con UNI2.',
+  icons: {
+    icon: 'https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Fic_launcher.png?alt=media&token=4a958c34-b6af-4182-b273-69aee71f42f7',
+  },
 };
 
 

@@ -148,8 +148,8 @@ export default function LoginPage() {
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
-             <Image src="https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Ficono.png?alt=media&token=01da1e37-9b0d-4da7-b6c2-ae3803cdcbcc" alt="UNI2 Logo" width={64} height={64} className="mx-auto" />
-            <h1 className="text-3xl font-bold">Iniciar Sesión en UNI2</h1>
+             <Image src="https://firebasestorage.googleapis.com/v0/b/lemon-admin.firebasestorage.app/o/home%2Ficono.png?alt=media&token=01da1e37-9b0d-4da7-b6c2-ae3803cdcbcc" alt="UNI2 Logo" width={200} height={100} className="mx-auto" />
+            <h1 className="text-3xl font-bold">Iniciar Sesión</h1>
             <p className="text-balance text-muted-foreground">
               Ingresa tu correo para acceder a tu cuenta
             </p>
